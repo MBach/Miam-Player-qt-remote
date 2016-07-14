@@ -9,6 +9,8 @@
 #include "lastconnectionsmodel.h"
 #include "remoteclient.h"
 
+#include <QQuickStyle>
+
 int main(int argc, char *argv[])
 {
     QGuiApplication::setOrganizationName(COMPANY);
@@ -18,6 +20,7 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+	QQuickStyle::setStyle("Material");
     QQmlApplicationEngine engine;
     engine.load(QUrl("qrc:/miamplayer-remote.qml"));
 

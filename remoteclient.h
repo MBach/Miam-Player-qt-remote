@@ -27,6 +27,7 @@ public slots:
 
 signals:
 	void connectingChanged();
+	void aboutToDisplayGreetings(const QVariant &greetings);
 };
 
 #endif // REMOTECLIENT_H

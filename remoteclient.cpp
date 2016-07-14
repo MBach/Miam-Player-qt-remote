@@ -1,9 +1,12 @@
 #include "remoteclient.h"
 
 #include <QHostAddress>
+#include <QQmlApplicationEngine>
+#include <QQuickWindow>
 #include <QSettings>
 
 #include <QtDebug>
+
 
 RemoteClient::RemoteClient(QObject *parent)
 	: QObject(parent)
@@ -11,11 +14,11 @@ RemoteClient::RemoteClient(QObject *parent)
 	, _isConnecting(false)
 {
 	_in.setDevice(_socket);
-	_in.setVersion(QDataStream::Qt_5_6);
+	_in.setVersion(QDataStream::Qt_5_7);
 
 	connect(_socket, &QTcpSocket::stateChanged, this, [=](QAbstractSocket::SocketState state) {
 		if (QAbstractSocket::ConnectedState == state) {
-			qDebug() << "About to receive data from Host";
+			qDebug() << "About to receive data from Host" << _socket->peerName();
 			QSettings settings;
 			QList<QVariant> hosts = settings.value("lastHosts").toList();
 			QString ip = _socket->peerAddress().toString();
@@ -30,17 +33,18 @@ RemoteClient::RemoteClient(QObject *parent)
 			_isConnecting = false;
 		}
 	});
-	connect(_socket, &QTcpSocket::readyRead, this, [=]() {
+	connect(_socket, &QIODevice::readyRead, this, [=]() {
 		_in.startTransaction();
 
 		QString greetings;
 		_in >> greetings;
-		qDebug() << "QTcpSocket::readyRead" << greetings;
 
 		if (!_in.commitTransaction()) {
 			return;
 		}
 
+		qDebug() << "QTcpSocket::readyRead" << greetings;
+		emit aboutToDisplayGreetings(QVariant::fromValue(greetings));
 	});
 }
 

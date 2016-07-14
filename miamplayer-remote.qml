@@ -41,7 +41,6 @@
 import QtQuick 2.6
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.0
 import Qt.labs.settings 1.0
 
 ApplicationWindow {
@@ -51,18 +50,12 @@ ApplicationWindow {
     visible: true
     title: "Miam-Player Remote"
 
-    Material.theme: Material.Dark
-    Material.accent: Material.Purple
-
     Settings {
         id: settings
-        property string style: "Material.Dark"
         property int port: 5600
     }
 
     header: ToolBar {
-        Material.foreground: "black"
-
         RowLayout {
             spacing: 20
             anchors.fill: parent
@@ -140,6 +133,7 @@ ApplicationWindow {
 
             model: ListModel {
                 ListElement { title: "Connect"; source: "qrc:/pages/Connect.qml" }
+                ListElement { title: "Remote"; source: "qrc:/pages/Remote.qml" }
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }
@@ -221,10 +215,6 @@ ApplicationWindow {
                         settingsPopup.close()
                     }
 
-                    Material.foreground: Material.primary
-                    Material.background: "transparent"
-                    Material.elevation: 0
-
                     Layout.preferredWidth: 0
                     Layout.fillWidth: true
                 }
@@ -235,9 +225,6 @@ ApplicationWindow {
                     onClicked: {
                         settingsPopup.close()
                     }
-
-                    Material.background: "transparent"
-                    Material.elevation: 0
 
                     Layout.preferredWidth: 0
                     Layout.fillWidth: true
