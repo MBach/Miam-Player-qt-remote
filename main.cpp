@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     QGuiApplication::setOrganizationName(COMPANY);
     QGuiApplication::setApplicationName(SOFT);
     QGuiApplication::setApplicationVersion(VERSION);
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
 

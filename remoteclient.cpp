@@ -7,7 +7,6 @@
 
 #include <QtDebug>
 
-
 RemoteClient::RemoteClient(QObject *parent)
 	: QObject(parent)
 	, _socket(new QTcpSocket(this))
