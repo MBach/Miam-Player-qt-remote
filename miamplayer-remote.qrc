@@ -1,21 +1,24 @@
 <RCC>
     <qresource prefix="/">
         <file>qtquickcontrols2.conf</file>
+        <file>images/+material/drawer.png</file>
+        <file>images/+material/drawer@2x.png</file>
+        <file>images/+material/drawer@3x.png</file>
+        <file>images/+material/drawer@4x.png</file>
+		<file>images/+material/menu.png</file>
+        <file>images/+material/menu@2x.png</file>
+        <file>images/+material/menu@3x.png</file>
+        <file>images/+material/menu@4x.png</file>
+		
         <file>images/menu.png</file>
         <file>images/menu@2x.png</file>
         <file>images/menu@3x.png</file>
         <file>images/menu@4x.png</file>
-        <file>images/+material/menu.png</file>
-        <file>images/+material/menu@2x.png</file>
-        <file>images/+material/menu@3x.png</file>
-        <file>images/+material/menu@4x.png</file>
-        <file>miamplayer-remote.qml</file>
-        <file>pages/Connect.qml</file>
+
         <file>images/miam-player_logo.png</file>
         <file>images/miam-player_logo@2x.png</file>
         <file>images/miam-player_logo@3x.png</file>
         <file>images/miam-player_logo@4x.png</file>
-        <file>pages/Remote.qml</file>
         <file>images/disc.png</file>
         <file>images/disc@2x.png</file>
         <file>images/pause.png</file>
@@ -26,5 +29,16 @@
         <file>images/next@2x.png</file>
         <file>images/previous.png</file>
         <file>images/previous@2x.png</file>
+
+        <file>images/drawer.png</file>
+        <file>images/drawer@2x.png</file>
+        <file>images/drawer@3x.png</file>
+        <file>images/drawer@4x.png</file>
+		
+		<file>miamplayer-remote.qml</file>
+		<file>pages/connect.qml</file>
+        <file>pages/history.qml</file>
+        <file>pages/remote.qml</file>
+        <file>pages/settings.qml</file>
     </qresource>
 </RCC>

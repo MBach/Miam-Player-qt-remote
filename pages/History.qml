@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 
 Pane {
-    id: remote
+    id: remotePane
 
     ColumnLayout {
         id: column
@@ -26,8 +26,8 @@ Pane {
             anchors.top: connectLabel.bottom
 
             Layout.fillWidth: true
-            width: remote.availableWidth / 6
-            height: remote.availableHeight / 6
+            width: remotePane.availableWidth / 6
+            height: remotePane.availableHeight / 6
             horizontalAlignment: Image.AlignHCenter
             fillMode: Image.PreserveAspectFit
             source: "qrc:/images/miam-player_logo.png"
@@ -145,11 +145,4 @@ Pane {
         }
     }
 
-    Connections {
-        target: remoteClient
-        onAboutToDisplayGreetings: {
-            messageFromServer.text = greetings
-            connectedDialog.open()
-        }
-    }
 }

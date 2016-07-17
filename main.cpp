@@ -7,7 +7,9 @@
 #define VERSION "0.1"
 
 #include "lastconnectionsmodel.h"
+#include "mediaplayercontrol.h"
 #include "remoteclient.h"
+#include "coverprovider.h"
 
 #include <QQuickStyle>
 
@@ -24,10 +26,14 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.load(QUrl("qrc:/miamplayer-remote.qml"));
 
-    RemoteClient remoteClient;
+	CoverProvider *coverProvider = new CoverProvider;
+	RemoteClient remoteClient(coverProvider);
 	LastConnectionsModel lastConnectionsModel;
-	engine.rootContext()->setContextProperty("remoteClient", &remoteClient);
+	MediaPlayerControl mediaPlayerControl(&remoteClient);
 	engine.rootContext()->setContextProperty("lastConnectionsModel", &lastConnectionsModel);
+	engine.rootContext()->setContextProperty("remoteClient", &remoteClient);
+	engine.rootContext()->setContextProperty("mediaPlayerControl", &mediaPlayerControl);
+	engine.addImageProvider(QLatin1String("coverprovider"), coverProvider);
 
     return app.exec();
 }

@@ -47,7 +47,7 @@ Pane {
             anchors.right: parent.right
             placeholderText: "Type an IP address"
             inputMethodHints: Qt.ImhFormattedNumbersOnly
-            onAccepted: remoteClient.ipAddressFilled(text)
+            onAccepted: remoteClient.establishConnectionToServer(text)
         }
 
         Label {
@@ -68,9 +68,13 @@ Pane {
             id: radioDelegateComponent
 
             RadioDelegate {
-                text: labelText
+                text: ipText
                 width: parent.width
                 ButtonGroup.group: radioButtonGroup
+                onClicked: {
+                    console.log(text)
+                    remoteClient.establishConnectionToServer(text)
+                }
             }
         }
 
@@ -87,33 +91,9 @@ Pane {
                 id: delegateLoader
                 width: listView.width
                 sourceComponent: radioDelegateComponent
-
-                property string labelText: ip
+                property string ipText: ip
                 property ListView view: listView
-                property int ourIndex: index
-
-                // Can't find a way to do this in the SwipeDelegate component itself,
-                // so do it here instead.
-                ListView.onRemove: SequentialAnimation {
-                    PropertyAction {
-                        target: delegateLoader
-                        property: "ListView.delayRemove"
-                        value: true
-                    }
-                    NumberAnimation {
-                        target: item
-                        property: "height"
-                        to: 0
-                        easing.type: Easing.InOutQuad
-                    }
-                    PropertyAction {
-                        target: delegateLoader
-                        property: "ListView.delayRemove"
-                        value: false
-                    }
-                }
             }
-            //highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
             focus: true
         }
     }
@@ -150,6 +130,7 @@ Pane {
         onAboutToDisplayGreetings: {
             messageFromServer.text = greetings
             connectedDialog.open()
+            //drawer.open()
         }
     }
 }

@@ -4,30 +4,54 @@
 #include <QDataStream>
 #include <QTcpSocket>
 
+#include "coverprovider.h"
+
+/**
+ * \brief		The RemoteClient class is used to managed bidirectionnal connection and commands.
+ * \details
+ * \author      Matthieu Bachelier
+ * \copyright   GNU General Public License v3
+ */
 class RemoteClient : public QObject
 {
     Q_OBJECT
-
+	Q_ENUMS(Command)
 	Q_PROPERTY(bool isConnecting READ isConnecting NOTIFY connectingChanged)
 
 private:
-	QTcpSocket *_socket;
+	CoverProvider *_coverProvider;
 
-	QDataStream _in;
+	QTcpSocket *_socket;
 
 	bool _isConnecting;
 
 public:
-    explicit RemoteClient(QObject *parent = 0);
+	enum Command : int {	CMD_Player		= 0,
+							CMD_State		= 1,
+							CMD_Track		= 2,
+							CMD_Volume		= 3,
+							CMD_Connection	= 4,
+							CMD_Cover		= 5};
+
+	explicit RemoteClient(CoverProvider *coverProvider, QObject *parent = 0);
 
 	inline bool isConnecting() const { return _isConnecting; }
 
+private slots:
+	void socketStateChanged(QAbstractSocket::SocketState state);
+
+	void socketReadyRead();
+
 public slots:
-    void ipAddressFilled(const QString& ip);
+	void establishConnectionToServer(const QString& ip);
+
+	void sendCommandToServer(const QString &command);
 
 signals:
 	void connectingChanged();
 	void aboutToDisplayGreetings(const QVariant &greetings);
+	void playing();
+	void paused();
 };
 
 #endif // REMOTECLIENT_H

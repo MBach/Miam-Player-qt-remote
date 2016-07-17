@@ -6,8 +6,7 @@ import QtGraphicalEffects 1.0
 import QtQuick.Controls.Material 2.0
 
 Pane {
-    id: remote
-    width: parent.width
+    id: remotePane
 
     ColumnLayout {
         id: columnLayout
@@ -16,7 +15,7 @@ Pane {
         anchors.top: parent.top
         anchors.left: parent.left
         spacing: 20
-        //implicitHeight: volumeLabel.height + volumeSlider.height + layoutRect.height + progressLabel.height
+        implicitHeight: volumeLabel.height + volumeSlider.height + layoutRect.height + progressLabel.height
 
         Label {
             id: volumeLabel
@@ -39,7 +38,7 @@ Pane {
             anchors.right: parent.right
             anchors.left: parent.left
             anchors.top: volumeSlider.bottom
-            //implicitHeight: logo.height
+            implicitHeight: logo.height
 
             Image {
                 id: logo
@@ -49,7 +48,7 @@ Pane {
                 Layout.fillWidth: true
                 horizontalAlignment: Image.AlignHCenter
                 fillMode: Image.PreserveAspectFit
-                source: "qrc:/images/disc.png"
+                source: "image://coverprovider/default"
             }
         }
 
@@ -64,68 +63,80 @@ Pane {
 
         Slider {
             id: progressSlider
+            Layout.fillHeight: true
             anchors.top: progressLabel.bottom
             value: 0.5
             Layout.fillWidth: true
         }
-
-        RowLayout {
-            id: row
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            anchors.top: progressSlider.bottom
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.left: parent.left
-            Layout.preferredHeight: 128
-
-            Image {
-                id: previous
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                horizontalAlignment: Image.AlignHCenter
-                verticalAlignment: Image.AlignBottom
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/images/previous.png"
-
-            }
-            Image {
-                id: playPause
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                horizontalAlignment: Image.AlignHCenter
-                verticalAlignment: Image.AlignBottom
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/images/play.png"
-            }
-
-            Image {
-                id: next
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                horizontalAlignment: Image.AlignHCenter
-                verticalAlignment: Image.AlignBottom
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/images/next.png"
-
-                /*ColorOverlay {
-                    id: co
-                    anchors.fill: next
-                    source: next
-                    color: Material.accent
-                }*/
-
-                MouseArea {
-                    id: maNext
-                    anchors.fill: next
-                    onClicked: {
-                        console.log("hello")
-                    }
-                }
-            }
-
-        }
-
-
     }
 
+    RowLayout {
+        id: row
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        Layout.fillHeight: true
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+
+        Image {
+            id: previous
+            Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            horizontalAlignment: Image.AlignHCenter
+            verticalAlignment: Image.AlignBottom
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/images/previous.png"
+
+            MouseArea {
+                id: maPrevious
+                anchors.fill: parent
+                onClicked: {
+                    mediaPlayerControl.previous()
+                }
+            }
+        }
+        Image {
+            id: playPause
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            horizontalAlignment: Image.AlignHCenter
+            verticalAlignment: Image.AlignBottom
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/images/play.png"
+
+            MouseArea {
+                id: maPlayPause
+                anchors.fill: parent
+                onClicked: {
+                    mediaPlayerControl.playPause()
+                }
+            }
+        }
+        Image {
+            id: next
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            horizontalAlignment: Image.AlignHCenter
+            verticalAlignment: Image.AlignBottom
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/images/next.png"
+
+            MouseArea {
+                id: maNext
+                anchors.fill: parent
+                onClicked: {
+                    mediaPlayerControl.next()
+                }
+            }
+        }
+
+        Connections {
+            target: remoteClient
+            onPlaying: playPause.source = "qrc:/images/play.png"
+            onPaused: playPause.source = "qrc:/images/pause.png"
+        }
+    }
 }

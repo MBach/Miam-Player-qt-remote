@@ -1,10 +1,14 @@
 TEMPLATE = app
+
 TARGET = MiamPlayer-Remote
 
-QT += quick quickcontrols2
+QT += quick quickcontrols2 multimedia
+
 CONFIG += console
 
 SOURCES += main.cpp \
+    coverprovider.cpp \
+    mediaplayercontrol.cpp \
     lastconnectionsmodel.cpp \
     remoteclient.cpp
 
@@ -14,5 +18,7 @@ RESOURCES += miamplayer-remote.qrc
 
 DISTFILES += miamplayer-remote.qml
 
-HEADERS += lastconnectionsmodel.h \
+HEADERS += coverprovider.h \
+    lastconnectionsmodel.h \
+    mediaplayercontrol.h \
     remoteclient.h

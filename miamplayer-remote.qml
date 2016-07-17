@@ -20,12 +20,22 @@ ApplicationWindow {
             spacing: 20
             anchors.fill: parent
 
+            ToolButton {
+                contentItem: Image {
+                    fillMode: Image.Pad
+                    horizontalAlignment: Image.AlignHCenter
+                    verticalAlignment: Image.AlignVCenter
+                    source: "qrc:/images/drawer.png"
+                }
+                onClicked: drawer.open()
+            }
+
             Label {
                 id: titleLabel
                 text: "Home"
                 font.pixelSize: 20
                 elide: Label.ElideRight
-                horizontalAlignment: Qt.AlignHCenter
+                horizontalAlignment: Qt.AlignLeft
                 verticalAlignment: Qt.AlignVCenter
                 Layout.fillWidth: true
             }
@@ -57,6 +67,14 @@ ApplicationWindow {
         }
     }
 
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        /*initialItem: {
+            source: "qrc:/pages/connect.qml"
+        }*/
+    }
+
     Drawer {
         id: drawer
         width: Math.min(window.width, window.height) / 3 * 2
@@ -82,43 +100,17 @@ ApplicationWindow {
             }
 
             model: ListModel {
-                ListElement { title: "Connect"; source: "qrc:/pages/Connect.qml" }
-                ListElement { title: "Remote"; source: "qrc:/pages/Remote.qml" }
+                ListElement { title: "Connect"; source: "qrc:/pages/connect.qml" }
+                ListElement { title: "Remote"; source: "qrc:/pages/remote.qml" }
+                ListElement { title: "Settings"; source: "qrc:/pages/settings.qml" }
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }
         }
+
     }
 
-    StackView {
-        id: stackView
-        anchors.fill: parent
-
-        initialItem: Pane {
-            id: pane
-
-            Image {
-                id: logo
-                width: pane.availableWidth / 2
-                height: pane.availableHeight / 2
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: -50
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/images/miam-player_logo.png"
-            }
-
-            Label {
-                text: "This page will be removed in the future. Please open the menu"
-                anchors.margins: 20
-                anchors.top: logo.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                horizontalAlignment: Label.AlignHCenter
-                verticalAlignment: Label.AlignVCenter
-                wrapMode: Label.Wrap
-            }
-        }
-    }
+    //Component.onCompleted: stackView.push(listView.itemAt(2))
 
     Popup {
         id: settingsPopup
