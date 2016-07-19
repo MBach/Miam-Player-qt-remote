@@ -101,7 +101,7 @@ Pane {
     }
 
     Popup {
-        id: connectedDialog
+        id: connectDialog
         modal: true
         focus: true
         x: (window.width - width) / 2
@@ -114,12 +114,13 @@ Pane {
             spacing: 20
 
             Label {
+                id: headerConnect
                 text: "You are connected"
                 font.bold: true
             }
 
             Label {
-                id: messageFromServer
+                id: bodyConnect
                 width: aboutDialog.availableWidth
                 wrapMode: Label.Wrap
                 font.pixelSize: 12
@@ -130,9 +131,8 @@ Pane {
     Connections {
         target: remoteClient
         onAboutToDisplayGreetings: {
-            messageFromServer.text = greetings
-            connectedDialog.open()
-            //drawer.open()
+            bodyConnect.text = greetings
+            connectDialog.open()
         }
     }
 }

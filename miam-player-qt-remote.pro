@@ -2,7 +2,7 @@ TEMPLATE = app
 
 TARGET = MiamPlayer-Remote
 
-QT += quick quickcontrols2 multimedia
+QT += quick quickcontrols2 multimedia network
 
 CONFIG += console
 
@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     lastconnectionsmodel.cpp \
     remoteclient.cpp \
     genericdao.cpp \
-    trackdao.cpp
+    trackdao.cpp \
+    wifichecker.cpp
 
 OTHER_FILES += pages/*.qml
 
@@ -32,6 +33,7 @@ HEADERS += coverprovider.h \
     mediaplayercontrol.h \
     remoteclient.h \
     genericdao.h \
-    trackdao.h
+    trackdao.h \
+    wifichecker.h
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

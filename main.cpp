@@ -6,10 +6,11 @@
 #define SOFT "MiamPlayerRemote"
 #define VERSION "0.1"
 
+#include "coverprovider.h"
 #include "lastconnectionsmodel.h"
 #include "mediaplayercontrol.h"
 #include "remoteclient.h"
-#include "coverprovider.h"
+#include "wifichecker.h"
 
 #include "trackdao.h"
 
@@ -30,16 +31,20 @@ int main(int argc, char *argv[])
 
 	QQuickStyle::setStyle("Material");
     QQmlApplicationEngine engine;
-    engine.load(QUrl("qrc:/miamplayer-remote.qml"));
-
 	CoverProvider *coverProvider = new CoverProvider;
 	RemoteClient remoteClient(coverProvider);
 	LastConnectionsModel lastConnectionsModel;
 	MediaPlayerControl mediaPlayerControl(&remoteClient);
+	WifiChecker wifiChecker;
+	engine.rootContext()->setContextProperty("wifiChecker", &wifiChecker);
 	engine.rootContext()->setContextProperty("lastConnectionsModel", &lastConnectionsModel);
 	engine.rootContext()->setContextProperty("remoteClient", &remoteClient);
 	engine.rootContext()->setContextProperty("mediaPlayerControl", &mediaPlayerControl);
 	engine.addImageProvider(QLatin1String("coverprovider"), coverProvider);
+
+	engine.load(QUrl("qrc:/miamplayer-remote.qml"));
+
+
 
     return app.exec();
 }

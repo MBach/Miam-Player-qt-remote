@@ -10,7 +10,6 @@ public:
 	explicit LastConnectionsModel(QObject *parent = 0);
 
 	enum AnimalRoles {
-		//IpRole   = Qt::UserRole + 1,
 		IpRole   = Qt::DisplayRole,
 		DateRole
 	};

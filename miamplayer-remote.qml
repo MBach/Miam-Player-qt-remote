@@ -107,10 +107,7 @@ ApplicationWindow {
 
             ScrollIndicator.vertical: ScrollIndicator { }
         }
-
     }
-
-    //Component.onCompleted: stackView.push(listView.itemAt(2))
 
     Popup {
         id: settingsPopup
@@ -194,11 +191,58 @@ ApplicationWindow {
             }
 
             Label {
+                id: idLabelPopup
                 width: aboutDialog.availableWidth
                 text: "'Miam-Player Remote' is a small App on your smartphone for remote control the Audio Software 'Miam-Player'"
                 wrapMode: Label.Wrap
                 font.pixelSize: 12
             }
         }
+    }
+
+    Popup {
+        id: startupDialog
+        modal: true
+        focus: true
+        x: window.width * 0.2
+        y: window.height * 0.2
+        width: Math.min(window.width, window.height) * 0.6
+        height: window.height * 0.6
+
+        //contentHeight: startupColumn.height
+        implicitHeight: startupColumn.height
+        closePolicy: Popup.NoAutoClose
+
+        Column {
+            id: startupColumn
+            spacing: 20
+
+
+            Label {
+                text: qsTr("No WiFi detected")
+                font.bold: true
+            }
+
+            Label {
+                wrapMode: Text.WordWrap
+                text: qsTr("Please enable Wifi to use this App.")
+            }
+
+            Label {
+                wrapMode: Text.WordWrap
+                text: qsTr("This popup will close automatically when connected!")
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        if (!wifiChecker.isOk()) {
+            startupDialog.open()
+        }
+    }
+
+    Connections {
+        target: wifiChecker
+        onCloseStartupPopup: startupDialog.close()
     }
 }
