@@ -26,7 +26,7 @@ private:
 	bool _isConnecting;
 
 public:
-	enum Command : int {	CMD_Player		= 0,
+	enum Command : int {	CMD_Playback	= 0,
 							CMD_State		= 1,
 							CMD_Track		= 2,
 							CMD_Volume		= 3,
@@ -38,6 +38,7 @@ public:
 	inline bool isConnecting() const { return _isConnecting; }
 
 private slots:
+
 	void socketStateChanged(QAbstractSocket::SocketState state);
 
 	void socketReadyRead();
@@ -45,11 +46,14 @@ private slots:
 public slots:
 	void establishConnectionToServer(const QString& ip);
 
-	void sendCommandToServer(const QString &command);
+	void sendPlaybackCommand(const QString &command);
+
+	void setVolume(qreal v);
 
 signals:
-	void connectingChanged();
 	void aboutToDisplayGreetings(const QVariant &greetings);
+	void aboutToUpdateVolume(qreal volume);
+	void connectingChanged();
 	void playing();
 	void paused();
 };

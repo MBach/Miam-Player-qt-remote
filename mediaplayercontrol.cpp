@@ -11,15 +11,15 @@ MediaPlayerControl::MediaPlayerControl(RemoteClient *remoteClient, QObject *pare
 
 void MediaPlayerControl::previous()
 {
-	_remoteClient->sendCommandToServer("skip-backward");
+	_remoteClient->sendPlaybackCommand("skip-backward");
 }
 
 void MediaPlayerControl::playPause()
 {
-	_remoteClient->sendCommandToServer("play-pause");
+	_remoteClient->sendPlaybackCommand("play-pause");
 }
 
 void MediaPlayerControl::next()
 {
-	_remoteClient->sendCommandToServer("skip-forward");
+	_remoteClient->sendPlaybackCommand("skip-forward");
 }

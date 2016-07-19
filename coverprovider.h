@@ -6,7 +6,7 @@
 class CoverProvider : public QQuickImageProvider
 {
 private:
-	bool _hasReceviedRemoteData;
+	bool _hasReceivedRemoteData;
 	QByteArray _cover;
 
 public:

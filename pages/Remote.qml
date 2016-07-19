@@ -30,6 +30,44 @@ Pane {
             value: 0.5
             Layout.fillWidth: true
             anchors.horizontalCenter: parent.horizontalCenter
+
+            /*function sendToServer(value) {
+                remoteClient.setVolume(value)
+            }
+            onValueChanged: sendToServer(value)
+
+            Connections {
+                target: remoteClient
+                onAboutToUpdateVolume: {
+                    volumeSlider.valueChanged.disconnect(volumeSlider.sendToServer)
+                    volumeSlider.value = volume
+                    volumeSlider.valueChanged.connect(volumeSlider.sendToServer)
+                }
+            }*/
+
+            /*onValueChanged: remoteClient.setVolume(value)
+
+            Connections {
+                target: remoteClient
+                onAboutToUpdateVolume: {
+                    volumeSlider.valueChanged.disconnect(remoteClient.setVolume)
+                    volumeSlider.value = volume
+                    volumeSlider.valueChanged.connect(remoteClient.setVolume)
+                }
+            }*/
+
+            Connections {
+                target: remoteClient
+                onAboutToUpdateVolume: {
+                    volumeSlider.value = volume
+                }
+            }
+            Connections {
+                target: volumeSlider
+                onValueChanged: {
+                    remoteClient.setVolume(volumeSlider.value)
+                }
+            }
         }
 
         RowLayout {

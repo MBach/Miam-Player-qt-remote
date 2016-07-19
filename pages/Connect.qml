@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 
 Pane {
-    id: connect
+    id: connectPane
 
     ColumnLayout {
         id: column
@@ -26,8 +26,10 @@ Pane {
             anchors.top: connectLabel.bottom
 
             Layout.fillWidth: true
-            width: connect.availableWidth / 6
-            height: connect.availableHeight / 6
+            //width: connectPane.availableWidth / 6
+            //height: connectPane.availableHeight / 6
+            Layout.preferredHeight: 100
+            //Layout.preferredHeight: 100
             horizontalAlignment: Image.AlignHCenter
             fillMode: Image.PreserveAspectFit
             source: "qrc:/images/miam-player_logo.png"

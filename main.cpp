@@ -11,6 +11,8 @@
 #include "remoteclient.h"
 #include "coverprovider.h"
 
+#include "trackdao.h"
+
 #include <QQuickStyle>
 
 int main(int argc, char *argv[])
@@ -19,6 +21,10 @@ int main(int argc, char *argv[])
     QGuiApplication::setApplicationName(SOFT);
     QGuiApplication::setApplicationVersion(VERSION);
 	QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+	qRegisterMetaType<GenericDAO>();
+	qRegisterMetaType<TrackDAO>();
+	qRegisterMetaTypeStreamOperators<TrackDAO>("TrackDAO");
 
     QGuiApplication app(argc, argv);
 
