@@ -6,3 +6,5 @@
 *.wixobj
 *.wixpdb
 *ui_*.h
+
+android\*properties~
