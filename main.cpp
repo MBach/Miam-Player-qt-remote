@@ -9,6 +9,7 @@
 #include "coverprovider.h"
 #include "lastconnectionsmodel.h"
 #include "mediaplayercontrol.h"
+#include "playlistmanagermodel.h"
 #include "remoteclient.h"
 #include "wifichecker.h"
 
@@ -36,15 +37,15 @@ int main(int argc, char *argv[])
 	LastConnectionsModel lastConnectionsModel;
 	MediaPlayerControl mediaPlayerControl(&remoteClient);
 	WifiChecker wifiChecker;
+	PlaylistManagerModel playlistManagerModel;
 	engine.rootContext()->setContextProperty("wifiChecker", &wifiChecker);
 	engine.rootContext()->setContextProperty("lastConnectionsModel", &lastConnectionsModel);
 	engine.rootContext()->setContextProperty("remoteClient", &remoteClient);
 	engine.rootContext()->setContextProperty("mediaPlayerControl", &mediaPlayerControl);
-	engine.addImageProvider(QLatin1String("coverprovider"), coverProvider);
+	engine.rootContext()->setContextProperty("playlistManagerModel", &playlistManagerModel);
+	engine.addImageProvider(QString("coverprovider"), coverProvider);
 
-	engine.load(QUrl("qrc:/miamplayer-remote.qml"));
-
-
+	engine.load(QUrl("qrc:/pages/mainPage"));
 
     return app.exec();
 }

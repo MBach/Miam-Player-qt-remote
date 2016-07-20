@@ -100,9 +100,11 @@ ApplicationWindow {
             }
 
             model: ListModel {
-                ListElement { title: "Connect"; source: "qrc:/pages/connect.qml" }
-                ListElement { title: "Remote"; source: "qrc:/pages/remote.qml" }
-                ListElement { title: "Settings"; source: "qrc:/pages/settings.qml" }
+                ListElement { title: "Connect"; source: "qrc:/pages/connect" }
+                ListElement { title: "Remote"; source: "qrc:/pages/remote" }
+                ListElement { title: "Playlists"; source: "qrc:/pages/playlists" }
+                ListElement { title: "Playlist Manager"; source: "qrc:/pages/playlistManager" }
+                ListElement { title: "Settings"; source: "qrc:/pages/settings" }
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }

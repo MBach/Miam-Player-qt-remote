@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     remoteclient.cpp \
     genericdao.cpp \
     trackdao.cpp \
-    wifichecker.cpp
+    wifichecker.cpp \
+    playlistmanagermodel.cpp
 
 OTHER_FILES += pages/*.qml
 
@@ -34,6 +35,7 @@ HEADERS += coverprovider.h \
     remoteclient.h \
     genericdao.h \
     trackdao.h \
-    wifichecker.h
+    wifichecker.h \
+    playlistmanagermodel.h
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
