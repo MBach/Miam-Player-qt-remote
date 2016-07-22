@@ -2,10 +2,17 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 
+import org.miamplayer.remote 1.0
+
 Pane {
     id: playlistManagerPane
-    width: parent.width
-    height: parent.height
+    //width: parent.width
+    //height: parent.height
+
+    PlaylistManagerModel {
+        id: playlistManagerModel
+        Component.onCompleted: requestAllPlaylists(remoteClient)
+    }
 
     Component {
         id: itemPlaylistDelegate
@@ -40,5 +47,16 @@ Pane {
         focus: true
         highlightFollowsCurrentItem: true
         delegate: itemPlaylistDelegate
+        onCurrentIndexChanged: {
+            console.log("currentIndexChanged")
+        }
+        onCurrentSectionChanged: {
+            console.log("currentSectionChanged")
+        }
+    }
+
+    Connections {
+        target: remoteClient
+        onAboutToSendPlaylists: playlistManagerModel.updateModel(playlists)
     }
 }

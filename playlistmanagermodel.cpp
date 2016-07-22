@@ -1,9 +1,23 @@
 #include "playlistmanagermodel.h"
 
+#include <QtDebug>
+
 PlaylistManagerModel::PlaylistManagerModel(QObject *parent)
 	: QStringListModel(parent)
 {
+	qDebug() << Q_FUNC_INFO;
 	QStringList l;
-	l << "Playlist 1" << "Playlist 2" << "Playlist 3" << "Playlist 4" << "Playlist 5";
 	setStringList(l);
+}
+
+void PlaylistManagerModel::requestAllPlaylists(RemoteClient *remoteClient)
+{
+	if (remoteClient && remoteClient->isConnected()) {
+		remoteClient->requestAllPlaylists();
+	}
+}
+
+void PlaylistManagerModel::updateModel(const QStringList &playlists)
+{
+	setStringList(playlists);
 }

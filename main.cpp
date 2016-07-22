@@ -12,7 +12,6 @@
 #include "playlistmanagermodel.h"
 #include "remoteclient.h"
 #include "wifichecker.h"
-
 #include "trackdao.h"
 
 #include <QQuickStyle>
@@ -29,6 +28,7 @@ int main(int argc, char *argv[])
 	qRegisterMetaTypeStreamOperators<TrackDAO>("TrackDAO");
 
     QGuiApplication app(argc, argv);
+	qmlRegisterType<PlaylistManagerModel>("org.miamplayer.remote", 1, 0, "PlaylistManagerModel");
 
 	QQuickStyle::setStyle("Material");
     QQmlApplicationEngine engine;
@@ -37,12 +37,11 @@ int main(int argc, char *argv[])
 	LastConnectionsModel lastConnectionsModel;
 	MediaPlayerControl mediaPlayerControl(&remoteClient);
 	WifiChecker wifiChecker;
-	PlaylistManagerModel playlistManagerModel;
+
 	engine.rootContext()->setContextProperty("wifiChecker", &wifiChecker);
 	engine.rootContext()->setContextProperty("lastConnectionsModel", &lastConnectionsModel);
 	engine.rootContext()->setContextProperty("remoteClient", &remoteClient);
 	engine.rootContext()->setContextProperty("mediaPlayerControl", &mediaPlayerControl);
-	engine.rootContext()->setContextProperty("playlistManagerModel", &playlistManagerModel);
 	engine.addImageProvider(QString("coverprovider"), coverProvider);
 
 	engine.load(QUrl("qrc:/pages/mainPage"));

@@ -13,10 +13,20 @@ RemoteClient::RemoteClient(CoverProvider *coverProvider, QObject *parent)
 	, _coverProvider(coverProvider)
 	, _socket(new QTcpSocket(this))
 	, _isConnecting(false)
+	, _isConnected(false)
 {
 	_socket->open(QIODevice::ReadWrite);
 	connect(_socket, &QTcpSocket::stateChanged, this, &RemoteClient::socketStateChanged);
 	connect(_socket, &QIODevice::readyRead, this, &RemoteClient::socketReadyRead);
+}
+
+void RemoteClient::requestAllPlaylists()
+{
+	QByteArray data;
+	QDataStream out(&data, QIODevice::ReadWrite);
+	out << CMD_Playlists;
+	out << QString();
+	_socket->write(data);
 }
 
 void RemoteClient::setVolume(qreal v)
@@ -43,6 +53,7 @@ void RemoteClient::socketStateChanged(QAbstractSocket::SocketState state)
 			settings.setValue("lastHosts", hosts);
 		}
 		_isConnecting = false;
+		_isConnected = true;
 	} else if (QAbstractSocket::ConnectingState == state) {
 		_isConnecting = true;
 	} else {
@@ -58,7 +69,6 @@ void RemoteClient::socketReadyRead()
 	QDataStream in;
 	in.setDevice(_socket);
 	in.setVersion(QDataStream::Qt_5_7);
-
 	int command;
 	in >> command;
 
@@ -141,6 +151,18 @@ void RemoteClient::socketReadyRead()
 		QByteArray message;
 		in >> message;
 		_coverProvider->generateCover(message);
+		break;
+	}
+	case CMD_Playlists: {
+		int count;
+		in >> count;
+		QStringList playlists;
+		for (int i = 0; i < count; i++) {
+			QString title;
+			in >> title;
+			playlists << title;
+		}
+		emit aboutToSendPlaylists(playlists);
 		break;
 	}
 	default:

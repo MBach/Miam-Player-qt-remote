@@ -24,6 +24,7 @@ private:
 	QTcpSocket *_socket;
 
 	bool _isConnecting;
+	bool _isConnected;
 
 public:
 	enum Command : int {	CMD_Playback	= 0,
@@ -31,11 +32,16 @@ public:
 							CMD_Track		= 2,
 							CMD_Volume		= 3,
 							CMD_Connection	= 4,
-							CMD_Cover		= 5};
+							CMD_Cover		= 5,
+							CMD_Playlists	= 6};
 
 	explicit RemoteClient(CoverProvider *coverProvider, QObject *parent = 0);
 
 	inline bool isConnecting() const { return _isConnecting; }
+
+	inline bool isConnected() const { return _isConnected; }
+
+	void requestAllPlaylists();
 
 private slots:
 
@@ -53,6 +59,7 @@ public slots:
 signals:
 	void aboutToDisplayGreetings(const QVariant &greetings);
 	void aboutToUpdateVolume(qreal volume);
+	void aboutToSendPlaylists(const QStringList &playlists);
 	void connectingChanged();
 	void playing();
 	void paused();
