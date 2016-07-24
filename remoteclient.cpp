@@ -20,11 +20,22 @@ RemoteClient::RemoteClient(CoverProvider *coverProvider, QObject *parent)
 	connect(_socket, &QIODevice::readyRead, this, &RemoteClient::socketReadyRead);
 }
 
+void RemoteClient::requestActivePlaylists()
+{
+	QByteArray data;
+	QDataStream out(&data, QIODevice::ReadWrite);
+	out.setVersion(QDataStream::Qt_5_7);
+	out << CMD_ActivePlaylists;
+	out << QString();
+	_socket->write(data);
+}
+
 void RemoteClient::requestAllPlaylists()
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::ReadWrite);
-	out << CMD_Playlists;
+	out.setVersion(QDataStream::Qt_5_7);
+	out << CMD_AllPlaylists;
 	out << QString();
 	_socket->write(data);
 }
@@ -33,6 +44,7 @@ void RemoteClient::setVolume(qreal v)
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::ReadWrite);
+	out.setVersion(QDataStream::Qt_5_7);
 	out << CMD_Volume;
 	QByteArray ba;
 	ba.append(reinterpret_cast<const char*>(&v), sizeof(v));
@@ -42,9 +54,8 @@ void RemoteClient::setVolume(qreal v)
 
 void RemoteClient::socketStateChanged(QAbstractSocket::SocketState state)
 {
-	qDebug() << Q_FUNC_INFO << state;
-	if (QAbstractSocket::ConnectedState == state) {
-		qDebug() << "About to receive data from Host" << _socket->peerName();
+	switch (state) {
+	case QAbstractSocket::ConnectedState: {
 		QSettings settings;
 		QList<QVariant> hosts = settings.value("lastHosts").toList();
 		QString ip = _socket->peerAddress().toString();
@@ -54,10 +65,20 @@ void RemoteClient::socketStateChanged(QAbstractSocket::SocketState state)
 		}
 		_isConnecting = false;
 		_isConnected = true;
-	} else if (QAbstractSocket::ConnectingState == state) {
+		break;
+	}
+	case QAbstractSocket::HostLookupState:
+	case QAbstractSocket::ConnectingState:
 		_isConnecting = true;
-	} else {
+		_isConnected = false;
+		break;
+	case QAbstractSocket::UnconnectedState:
 		_isConnecting = false;
+		_isConnected = false;
+		emit connectionFailed();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -129,10 +150,13 @@ void RemoteClient::socketReadyRead()
 	}
 	case CMD_Connection: {
 		qDebug() << Q_FUNC_INFO << "cmd:connect";
-		//QByteArray message = _socket->read();
 		QByteArray message;
 		in >> message;
-		emit aboutToDisplayGreetings(QString::fromStdString(message.toStdString()));
+		//emit aboutToDisplayGreetings(QString::fromStdString(message.toStdString()));
+
+		/// TODO detect from message in with mode are we (playlists vs unique)
+
+		emit connectionSucceded();
 		break;
 	}
 	case CMD_Cover: {
@@ -153,7 +177,7 @@ void RemoteClient::socketReadyRead()
 		_coverProvider->generateCover(message);
 		break;
 	}
-	case CMD_Playlists: {
+	case CMD_AllPlaylists: {
 		int count;
 		in >> count;
 		QStringList playlists;

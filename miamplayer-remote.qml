@@ -55,10 +55,6 @@ ApplicationWindow {
                     transformOrigin: Menu.TopRight
 
                     MenuItem {
-                        text: "Settings"
-                        onTriggered: settingsPopup.open()
-                    }
-                    MenuItem {
                         text: "About"
                         onTriggered: aboutDialog.open()
                     }
@@ -70,105 +66,141 @@ ApplicationWindow {
     StackView {
         id: stackView
         anchors.fill: parent
-        /*initialItem: {
-            source: "qrc:/pages/connect.qml"
-        }*/
     }
 
     Drawer {
         id: drawer
         width: Math.min(window.width, window.height) / 3 * 2
         height: window.height
+        margins: 0
 
-        ListView {
-            id: listView
-            currentIndex: -1
-            anchors.fill: parent
-
-            delegate: ItemDelegate {
-                width: parent.width
-                text: model.title
-                highlighted: ListView.isCurrentItem
-                onClicked: {
-                    if (listView.currentIndex != index) {
-                        listView.currentIndex = index
-                        titleLabel.text = model.title
-                        stackView.replace(model.source)
-                    }
-                    drawer.close()
-                }
-            }
-
-            model: ListModel {
-                ListElement { title: "Connect"; source: "qrc:/pages/connect" }
-                ListElement { title: "Remote"; source: "qrc:/pages/remote" }
-                ListElement { title: "Playlists"; source: "qrc:/pages/playlists" }
-                ListElement { title: "Playlist Manager"; source: "qrc:/pages/playlistManager" }
-                ListElement { title: "Settings"; source: "qrc:/pages/settings" }
-            }
-
-            ScrollIndicator.vertical: ScrollIndicator { }
+        function loadPage(title, pageName) {
+            titleLabel.text = title
+            stackView.replace(pageName)
+            drawer.close()
         }
-    }
 
-    Popup {
-        id: settingsPopup
-        x: (window.width - width) / 2
-        y: window.height / 6
-        width: Math.min(window.width, window.height) / 3 * 2
-        height: settingsColumn.implicitHeight + topPadding + bottomPadding
-        modal: true
-        focus: true
+        ColumnLayout {
 
-        contentItem: ColumnLayout {
-            id: settingsColumn
-            spacing: 20
-
+            id: columnLayout
+            Layout.fillWidth: true
+            anchors.left: parent.left
+            anchors.right: parent.right
             Label {
-                text: "Settings"
-                font.bold: true
+                text: qsTr("Connect")
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 15
+                Layout.topMargin: 15
+                height: 30
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: drawer.loadPage(parent.text, "qrc:/pages/connect")
+                }
+            }
+            Label {
+                text: qsTr("Remote")
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 15
+                Layout.topMargin: 15
+                height: 30
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: drawer.loadPage(parent.text, "qrc:/pages/remote")
+                }
             }
 
-            RowLayout {
-                spacing: 10
+            function closeMenu() {
+                var opened = (uniqueModeItem.visible === false)
+                playlistModeItem.visible = opened
+                uniqueModeItem.visible = opened
+                if (opened) {
+                    arrow.source = "qrc:/images/up.png"
+                } else {
+                    arrow.source = "qrc:/images/down.png"
+                }
+            }
 
+            // Align image and text
+            RowLayout {
+                id: viewItem
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 15
+                Layout.topMargin: 15
+                height: 30
                 Label {
-                    text: "Port:"
+                    text: "View"
                 }
-
-                TextField {
-                    id: styleBox
-                    text: "5600"
-                    inputMethodHints: Qt.ImhDigitsOnly
-                    property int port: 5600
-                    Layout.fillWidth: true
+                Image {
+                    id: arrow
+                    source: "qrc:/images/down.png"
+                    anchors.right: viewItem.right
+                }
+                MouseArea {
+                    id: maViewItem
+                    anchors.fill: parent
+                    onClicked: columnLayout.closeMenu()
                 }
             }
 
-            RowLayout {
-                spacing: 10
+            ButtonGroup {
+                id: radioGroup
+            }
 
-                Button {
-                    id: okButton
-                    text: "Ok"
+            // 2 foldable items
+            Item {
+                id: playlistModeItem
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 15
+                height: 30
+                visible: false
+                RadioButton {
+                    checked: true
+                    text: qsTr("Playlist Mode")
+                    ButtonGroup.group: radioGroup
                     onClicked: {
-                        settings.style = styleBox.displayText
-                        settingsPopup.close()
+                        drawer.loadPage(text, "qrc:/pages/playlists")
+                        columnLayout.closeMenu()
                     }
-
-                    Layout.preferredWidth: 0
-                    Layout.fillWidth: true
                 }
-
-                Button {
-                    id: cancelButton
-                    text: "Cancel"
+            }
+            Item {
+                id: uniqueModeItem
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 15
+                Layout.topMargin: 15
+                height: 30
+                visible: false
+                RadioButton {
+                    checked: false
+                    text: qsTr("Unique Mode")
+                    ButtonGroup.group: radioGroup
                     onClicked: {
-                        settingsPopup.close()
+                        drawer.loadPage("Remote", "qrc:/pages/remote")
+                        columnLayout.closeMenu()
                     }
+                }
+            }
 
-                    Layout.preferredWidth: 0
-                    Layout.fillWidth: true
+            // End of drawer
+            Label {
+                text: qsTr("Settings")
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 15
+                Layout.topMargin: 15
+                height: 30
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        titleLabel.text = parent.text
+                        stackView.replace("qrc:/pages/settings")
+                        drawer.close()
+                    }
                 }
             }
         }
@@ -188,14 +220,14 @@ ApplicationWindow {
             spacing: 20
 
             Label {
-                text: "About"
+                text: qsTr("About")
                 font.bold: true
             }
 
             Label {
                 id: idLabelPopup
                 width: aboutDialog.availableWidth
-                text: "'Miam-Player Remote' is a small App on your smartphone for remote control the Audio Software 'Miam-Player'"
+                text: qsTr("'Miam-Player Remote' is a small App on your smartphone for remote control the Audio Software 'Miam-Player'")
                 wrapMode: Label.Wrap
                 font.pixelSize: 12
             }

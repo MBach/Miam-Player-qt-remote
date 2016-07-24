@@ -17,6 +17,13 @@ void PlaylistManagerModel::requestAllPlaylists(RemoteClient *remoteClient)
 	}
 }
 
+void PlaylistManagerModel::requestActivePlaylists(RemoteClient *remoteClient)
+{
+	if (remoteClient && remoteClient->isConnected()) {
+		remoteClient->requestActivePlaylists();
+	}
+}
+
 void PlaylistManagerModel::updateModel(const QStringList &playlists)
 {
 	setStringList(playlists);

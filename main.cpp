@@ -15,6 +15,9 @@
 #include "trackdao.h"
 
 #include <QQuickStyle>
+#include <QTranslator>
+
+#include <QtDebug>
 
 int main(int argc, char *argv[])
 {
@@ -23,12 +26,19 @@ int main(int argc, char *argv[])
     QGuiApplication::setApplicationVersion(VERSION);
 	QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+	// Register some classes first
 	qRegisterMetaType<GenericDAO>();
 	qRegisterMetaType<TrackDAO>();
 	qRegisterMetaTypeStreamOperators<TrackDAO>("TrackDAO");
-
-    QGuiApplication app(argc, argv);
 	qmlRegisterType<PlaylistManagerModel>("org.miamplayer.remote", 1, 0, "PlaylistManagerModel");
+
+	// Translate the UI
+    QGuiApplication app(argc, argv);
+	QString language = QLocale::system().uiLanguages().first().left(2);
+	QTranslator playerTranslator;
+	bool b = playerTranslator.load(":/translations/miam-player-remote_" + language + ".qm");
+	bool c = app.installTranslator(&playerTranslator);
+	qDebug() << Q_FUNC_INFO << language << b << c;
 
 	QQuickStyle::setStyle("Material");
     QQmlApplicationEngine engine;
@@ -45,6 +55,5 @@ int main(int argc, char *argv[])
 	engine.addImageProvider(QString("coverprovider"), coverProvider);
 
 	engine.load(QUrl("qrc:/pages/mainPage"));
-
     return app.exec();
 }

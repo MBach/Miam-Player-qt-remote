@@ -4,8 +4,6 @@ import QtQuick.Controls 2.0
 
 Pane {
     id: settingsPane
-    //width: 254
-    //height: 384
 
     Column {
         id: column
@@ -27,7 +25,7 @@ Pane {
             spacing: 10
 
             Label {
-                text: "Port:"
+                text: qsTr("Port:")
                 Layout.rowSpan: 5
                 Layout.columnSpan: 5
                 Layout.fillHeight: false

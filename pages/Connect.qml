@@ -5,6 +5,42 @@ import QtQuick.Controls 2.0
 Pane {
     id: connectPane
 
+    Popup {
+        id: connectDialog
+        modal: true
+        focus: true
+        x: (window.width - width) / 2
+        y: window.height / 6
+        width: Math.min(window.width, window.height) / 5 * 4
+        contentHeight: aboutColumn.height
+
+        ColumnLayout {
+            id: connectColumn
+            spacing: 20
+
+            Label {
+                id: headerConnect
+                font.bold: true
+            }
+
+            Column {
+                id: bodyConnect
+                Label {
+                    text: qsTr("Miam-Player Remote was unable to reach the server")
+                    width: connectDialog.availableWidth
+                    wrapMode: Text.Wrap
+                    font.pixelSize: 12
+                }
+            }
+
+            BusyIndicator {
+                id: busy
+                running: true
+                Layout.alignment: Qt.AlignHCenter
+            }
+        }
+    }
+
     ColumnLayout {
         id: column
         transformOrigin: Item.Center
@@ -18,48 +54,43 @@ Pane {
             width: parent.width
             wrapMode: Label.Wrap
             horizontalAlignment: Qt.AlignHCenter
-            text: "Connect to Miam-Player:"
+            text: qsTr("Connect to Miam-Player:")
         }
 
         Image {
             id: logo
             anchors.top: connectLabel.bottom
-
             Layout.fillWidth: true
-            //width: connectPane.availableWidth / 6
-            //height: connectPane.availableHeight / 6
             Layout.preferredHeight: 100
-            //Layout.preferredHeight: 100
             horizontalAlignment: Image.AlignHCenter
             fillMode: Image.PreserveAspectFit
             source: "qrc:/images/miam-player_logo.png"
         }
 
-        BusyIndicator {
-            id: busy
-            running: remoteClient.isConnecting
-            //running: true
-            anchors.top: logo.bottom
-        }
-
         TextField {
             id: ipHostAddress
             anchors.top: logo.bottom
-            anchors.left: busy.right
+            anchors.left: parent.left
             anchors.right: parent.right
-            placeholderText: "Type an IP address"
+            placeholderText: qsTr("Type an IP address")
             inputMethodHints: Qt.ImhFormattedNumbersOnly
-            onAccepted: remoteClient.establishConnectionToServer(text)
+            onAccepted: {
+                headerConnect.text = qsTr("Connecting...")
+                bodyConnect.visible = false
+                busy.visible = true
+                connectDialog.open()
+                remoteClient.establishConnectionToServer(text)
+            }
         }
 
         Label {
             id: lastSuccessfulConnectionsLabel
-            anchors.top: busy.bottom
+            anchors.top: ipHostAddress.bottom
             Layout.fillWidth: true
             width: parent.width
             wrapMode: Label.Wrap
             horizontalAlignment: Qt.AlignHCenter
-            text: "Last successful connections:"
+            text: qsTr("Last successful connections:")
         }
 
         ButtonGroup {
@@ -74,7 +105,10 @@ Pane {
                 width: parent.width
                 ButtonGroup.group: radioButtonGroup
                 onClicked: {
-                    console.log(text)
+                    headerConnect.text = qsTr("Connecting...")
+                    bodyConnect.visible = false
+                    busy.visible = true
+                    connectDialog.open()
                     remoteClient.establishConnectionToServer(text)
                 }
             }
@@ -100,38 +134,17 @@ Pane {
         }
     }
 
-    Popup {
-        id: connectDialog
-        modal: true
-        focus: true
-        x: (window.width - width) / 2
-        y: window.height / 6
-        width: Math.min(window.width, window.height) / 3 * 2
-        contentHeight: aboutColumn.height
-
-        Column {
-            id: connectedColumn
-            spacing: 20
-
-            Label {
-                id: headerConnect
-                text: "You are connected"
-                font.bold: true
-            }
-
-            Label {
-                id: bodyConnect
-                width: aboutDialog.availableWidth
-                wrapMode: Label.Wrap
-                font.pixelSize: 12
-            }
-        }
-    }
-
     Connections {
         target: remoteClient
-        onAboutToDisplayGreetings: {
-            bodyConnect.text = greetings
+        onConnectionSucceded: {
+            connectDialog.close()
+            drawer.loadPage("Remote", "qrc:/pages/remote")
+        }
+
+        onConnectionFailed: {
+            headerConnect.text = qsTr("Not connected")
+            bodyConnect.visible = true
+            busy.visible = false
             connectDialog.open()
         }
     }

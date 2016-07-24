@@ -12,6 +12,8 @@ public:
 
 	Q_INVOKABLE void requestAllPlaylists(RemoteClient *remoteClient);
 
+	Q_INVOKABLE void requestActivePlaylists(RemoteClient *remoteClient);
+
 public slots:
 	void updateModel(const QStringList &playlists);
 };

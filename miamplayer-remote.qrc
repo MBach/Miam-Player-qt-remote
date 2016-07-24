@@ -33,6 +33,12 @@
         <file>images/drawer@4x.png</file>
         <file>images/navigate_next.png</file>
         <file>images/navigate_next@2x.png</file>
+        <file>images/down.png</file>
+        <file>images/down@2x.png</file>
+        <file>images/up.png</file>
+        <file>images/up@2x.png</file>
+        <file>translations/miam-player-remote_en.qm</file>
+        <file>translations/miam-player-remote_fr.qm</file>
     </qresource>
     <qresource prefix="/pages">
         <file alias="connect">pages/connect.qml</file>

@@ -16,7 +16,7 @@ class RemoteClient : public QObject
 {
     Q_OBJECT
 	Q_ENUMS(Command)
-	Q_PROPERTY(bool isConnecting READ isConnecting NOTIFY connectingChanged)
+	Q_PROPERTY(bool _isConnecting READ isConnecting)
 
 private:
 	CoverProvider *_coverProvider;
@@ -27,19 +27,22 @@ private:
 	bool _isConnected;
 
 public:
-	enum Command : int {	CMD_Playback	= 0,
-							CMD_State		= 1,
-							CMD_Track		= 2,
-							CMD_Volume		= 3,
-							CMD_Connection	= 4,
-							CMD_Cover		= 5,
-							CMD_Playlists	= 6};
+	enum Command : int {	CMD_Playback		= 0,
+							CMD_State			= 1,
+							CMD_Track			= 2,
+							CMD_Volume			= 3,
+							CMD_Connection		= 4,
+							CMD_Cover			= 5,
+							CMD_ActivePlaylists	= 7,
+							CMD_AllPlaylists	= 6};
 
 	explicit RemoteClient(CoverProvider *coverProvider, QObject *parent = 0);
 
-	inline bool isConnecting() const { return _isConnecting; }
+	Q_INVOKABLE inline bool isConnecting() const { return _isConnecting; }
 
 	inline bool isConnected() const { return _isConnected; }
+
+	void requestActivePlaylists();
 
 	void requestAllPlaylists();
 
@@ -57,10 +60,10 @@ public slots:
 	void setVolume(qreal v);
 
 signals:
-	void aboutToDisplayGreetings(const QVariant &greetings);
 	void aboutToUpdateVolume(qreal volume);
 	void aboutToSendPlaylists(const QStringList &playlists);
-	void connectingChanged();
+	void connectionSucceded();
+	void connectionFailed();
 	void playing();
 	void paused();
 };

@@ -4,17 +4,22 @@ TARGET = MiamPlayer-Remote
 
 QT += quick quickcontrols2 multimedia network
 
-CONFIG += console
+CONFIG += console qtquickcompiler
 
 SOURCES += main.cpp \
     coverprovider.cpp \
-    mediaplayercontrol.cpp \
-    lastconnectionsmodel.cpp \
-    remoteclient.cpp \
     genericdao.cpp \
+    lastconnectionsmodel.cpp \
+    mediaplayercontrol.cpp \
+    playlistmanagermodel.cpp \
+    remoteclient.cpp \
     trackdao.cpp \
-    wifichecker.cpp \
-    playlistmanagermodel.cpp
+    wifichecker.cpp
+
+lupdate_only{
+SOURCES = *.qml \
+    pages/*.qml
+}
 
 OTHER_FILES += pages/*.qml
 
@@ -30,12 +35,15 @@ DISTFILES += miamplayer-remote.qml \
     android/gradlew.bat
 
 HEADERS += coverprovider.h \
+    genericdao.h \
     lastconnectionsmodel.h \
     mediaplayercontrol.h \
+    playlistmanagermodel.h \
     remoteclient.h \
-    genericdao.h \
     trackdao.h \
-    wifichecker.h \
-    playlistmanagermodel.h
+    wifichecker.h
+
+TRANSLATIONS = translations/miam-player-remote_en.ts \
+    translations/miam-player-remote_fr.ts
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
