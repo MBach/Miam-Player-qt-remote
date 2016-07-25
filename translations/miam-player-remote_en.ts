@@ -8,10 +8,6 @@
         <translation>Miam-Player Remote was unable to reach the server</translation>
     </message>
     <message>
-        <source>Connect to Miam-Player:</source>
-        <translation>Connect to Miam-Player:</translation>
-    </message>
-    <message>
         <source>Type an IP address</source>
         <translation>Type an IP address</translation>
     </message>
@@ -20,12 +16,16 @@
         <translation>Connecting...</translation>
     </message>
     <message>
-        <source>Last successful connections:</source>
-        <translation>Last successful connections:</translation>
-    </message>
-    <message>
         <source>Not connected</source>
         <translation>Not connected</translation>
+    </message>
+    <message>
+        <source>Connect to Miam-Player</source>
+        <translation>Connect to Miam-Player</translation>
+    </message>
+    <message>
+        <source>Last successful connections</source>
+        <translation>Last successful connections</translation>
     </message>
 </context>
 <context>
@@ -74,16 +74,20 @@
 <context>
     <name>settings</name>
     <message>
-        <source>Connections</source>
-        <translation>Connections</translation>
-    </message>
-    <message>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
         <source>On startup, auto-connect to last server</source>
         <translation>On startup, auto-connect to last server</translation>
+    </message>
+    <message>
+        <source>Manage connections</source>
+        <translation>Manage connections</translation>
+    </message>
+    <message>
+        <source>Last successful connections</source>
+        <translation>Last successful connections</translation>
     </message>
 </context>
 </TS>

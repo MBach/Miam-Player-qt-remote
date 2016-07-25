@@ -238,19 +238,16 @@ ApplicationWindow {
         id: startupDialog
         modal: true
         focus: true
-        x: window.width * 0.2
-        y: window.height * 0.2
-        width: Math.min(window.width, window.height) * 0.6
-        height: window.height * 0.6
+        x: (window.width - width) / 2
+        y: window.height / 6
+        width: Math.min(window.width, window.height) / 3 * 2
+        contentHeight: startupColumn.height
 
-        //contentHeight: startupColumn.height
-        implicitHeight: startupColumn.height
         closePolicy: Popup.NoAutoClose
 
         Column {
             id: startupColumn
             spacing: 20
-
 
             Label {
                 text: qsTr("No WiFi detected")
@@ -258,25 +255,25 @@ ApplicationWindow {
             }
 
             Label {
-                wrapMode: Text.WordWrap
+                wrapMode: Label.Wrap
                 text: qsTr("Please enable Wifi to use this App.")
             }
 
             Label {
-                wrapMode: Text.WordWrap
+                wrapMode: Label.Wrap
                 text: qsTr("This popup will close automatically when connected!")
             }
-        }
-    }
-
-    Component.onCompleted: {
-        if (!wifiChecker.isOk()) {
-            startupDialog.open()
         }
     }
 
     Connections {
         target: wifiChecker
         onCloseStartupPopup: startupDialog.close()
+    }
+
+    Component.onCompleted: {
+        if (!wifiChecker.isOk()) {
+            startupDialog.open()
+        }
     }
 }

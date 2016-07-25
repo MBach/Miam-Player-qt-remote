@@ -16,9 +16,7 @@ public:
 
 	virtual QHash<int, QByteArray> roleNames() const override;
 
-signals:
-
-public slots:
+	Q_INVOKABLE void removeConnection(const QString &host);
 };
 
 #endif // LASTCONNECTIONSMODEL_H

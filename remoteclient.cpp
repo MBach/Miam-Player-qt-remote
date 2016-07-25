@@ -24,7 +24,7 @@ void RemoteClient::requestActivePlaylists()
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_7);
+	out.setVersion(QDataStream::Qt_5_6);
 	out << CMD_ActivePlaylists;
 	out << QString();
 	_socket->write(data);
@@ -34,7 +34,7 @@ void RemoteClient::requestAllPlaylists()
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_7);
+	out.setVersion(QDataStream::Qt_5_6);
 	out << CMD_AllPlaylists;
 	out << QString();
 	_socket->write(data);
@@ -44,7 +44,7 @@ void RemoteClient::setVolume(qreal v)
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_7);
+	out.setVersion(QDataStream::Qt_5_6);
 	out << CMD_Volume;
 	QByteArray ba;
 	ba.append(reinterpret_cast<const char*>(&v), sizeof(v));
@@ -89,7 +89,7 @@ void RemoteClient::socketReadyRead()
 	//qDebug() << Q_FUNC_INFO << "bytesAvailable:" << _socket->bytesAvailable() << "sizeof(Command)" << sizeof(Command);
 	QDataStream in;
 	in.setDevice(_socket);
-	in.setVersion(QDataStream::Qt_5_7);
+	in.setVersion(QDataStream::Qt_5_6);
 	int command;
 	in >> command;
 

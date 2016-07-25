@@ -2,6 +2,8 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 
+import QtQuick.Controls.Material 2.0
+
 Pane {
     id: connectPane
 
@@ -53,8 +55,10 @@ Pane {
             Layout.fillWidth: true
             width: parent.width
             wrapMode: Label.Wrap
-            horizontalAlignment: Qt.AlignHCenter
-            text: qsTr("Connect to Miam-Player:")
+            horizontalAlignment: Qt.AlignLeft
+            text: qsTr("Connect to Miam-Player")
+            color: Material.color(Material.Grey)
+            bottomPadding: 8
         }
 
         Image {
@@ -84,13 +88,15 @@ Pane {
         }
 
         Label {
+            topPadding: 12
             id: lastSuccessfulConnectionsLabel
             anchors.top: ipHostAddress.bottom
             Layout.fillWidth: true
             width: parent.width
             wrapMode: Label.Wrap
-            horizontalAlignment: Qt.AlignHCenter
-            text: qsTr("Last successful connections:")
+            horizontalAlignment: Qt.AlignLeft
+            text: qsTr("Last successful connections")
+            color: Material.color(Material.Grey)
         }
 
         ButtonGroup {
