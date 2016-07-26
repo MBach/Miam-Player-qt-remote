@@ -62,7 +62,7 @@ public slots:
 signals:
 	void aboutToUpdateVolume(qreal volume);
 	void aboutToSendPlaylists(const QStringList &playlists);
-	void connectionSucceded();
+	void connectionSucceded(const QString &hostName, const QString &ip);
 	void connectionFailed();
 	void playing();
 	void paused();

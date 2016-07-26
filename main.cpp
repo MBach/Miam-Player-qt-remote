@@ -9,6 +9,7 @@
 #include "coverprovider.h"
 #include "lastconnectionsmodel.h"
 #include "mediaplayercontrol.h"
+#include "networkscannermodel.h"
 #include "playlistmanagermodel.h"
 #include "remoteclient.h"
 #include "wifichecker.h"
@@ -31,6 +32,7 @@ int main(int argc, char *argv[])
 	qRegisterMetaType<TrackDAO>();
 	qRegisterMetaTypeStreamOperators<TrackDAO>("TrackDAO");
 	qmlRegisterType<PlaylistManagerModel>("org.miamplayer.remote", 1, 0, "PlaylistManagerModel");
+	qmlRegisterType<NetworkScannerModel>("org.miamplayer.remote", 1, 0, "NetworkScannerModel");
 
 	// Translate the UI
     QGuiApplication app(argc, argv);

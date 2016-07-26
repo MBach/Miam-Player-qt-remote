@@ -24,7 +24,7 @@ void RemoteClient::requestActivePlaylists()
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_6);
+	out.setVersion(QDataStream::Qt_5_5);
 	out << CMD_ActivePlaylists;
 	out << QString();
 	_socket->write(data);
@@ -34,7 +34,7 @@ void RemoteClient::requestAllPlaylists()
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_6);
+	out.setVersion(QDataStream::Qt_5_5);
 	out << CMD_AllPlaylists;
 	out << QString();
 	_socket->write(data);
@@ -44,7 +44,7 @@ void RemoteClient::setVolume(qreal v)
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_6);
+	out.setVersion(QDataStream::Qt_5_5);
 	out << CMD_Volume;
 	QByteArray ba;
 	ba.append(reinterpret_cast<const char*>(&v), sizeof(v));
@@ -89,7 +89,7 @@ void RemoteClient::socketReadyRead()
 	//qDebug() << Q_FUNC_INFO << "bytesAvailable:" << _socket->bytesAvailable() << "sizeof(Command)" << sizeof(Command);
 	QDataStream in;
 	in.setDevice(_socket);
-	in.setVersion(QDataStream::Qt_5_6);
+	in.setVersion(QDataStream::Qt_5_5);
 	int command;
 	in >> command;
 
@@ -149,14 +149,11 @@ void RemoteClient::socketReadyRead()
 		break;
 	}
 	case CMD_Connection: {
-		qDebug() << Q_FUNC_INFO << "cmd:connect";
-		QByteArray message;
-		in >> message;
-		//emit aboutToDisplayGreetings(QString::fromStdString(message.toStdString()));
-
+		QString hostName;
+		in >> hostName;
+		qDebug() << Q_FUNC_INFO << "cmd:connect" << hostName << _socket->peerAddress() << _socket->peerName();
 		/// TODO detect from message in with mode are we (playlists vs unique)
-
-		emit connectionSucceded();
+		emit connectionSucceded(hostName, _socket->peerAddress().toString());
 		break;
 	}
 	case CMD_Cover: {

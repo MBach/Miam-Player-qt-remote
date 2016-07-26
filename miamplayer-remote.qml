@@ -6,8 +6,8 @@ import Qt.labs.settings 1.0
 ApplicationWindow {
     id: window
     visible: true
-    width: 254
-    height: 384
+    width: 378
+    height: 588
     title: "Miam-Player Remote"
 
     Settings {
@@ -225,11 +225,9 @@ ApplicationWindow {
             }
 
             Label {
-                id: idLabelPopup
                 width: aboutDialog.availableWidth
                 text: qsTr("'Miam-Player Remote' is a small App on your smartphone for remote control the Audio Software 'Miam-Player'")
                 wrapMode: Label.Wrap
-                font.pixelSize: 12
             }
         }
     }

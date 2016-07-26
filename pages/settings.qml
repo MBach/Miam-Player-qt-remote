@@ -1,13 +1,18 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
-
+import Qt.labs.settings 1.0
 import QtQuick.Controls.Material 2.0
 
 Pane {
     id: settingsPane
     width: parent.width
     height: parent.height
+
+    Settings {
+        id: settings
+        property int port: 5600
+    }
 
     ColumnLayout {
         id: column
@@ -34,13 +39,12 @@ Pane {
             TextField {
                 Layout.preferredWidth: 60
                 id: portTextField
-                text: "5600"
+                text: settings.port
                 horizontalAlignment: Text.AlignRight
                 Layout.fillHeight: false
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 inputMethodHints: Qt.ImhDigitsOnly
-                property int port: 5600
-
+                onAccepted: settings.port = text
             }
         }
 
@@ -75,8 +79,19 @@ Pane {
 
             SwipeDelegate {
                 id: swipeDelegate
-                text: ipText
+                text: hostName
                 width: parent.width
+
+                contentItem: Label {
+                    rightPadding: swipeDelegate.indicator.width + swipeDelegate.spacing
+                    text: hostName + "<br>" + dateText
+                    font: swipeDelegate.font
+                    color: Material.foreground
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    textFormat: Text.RichText
+                }
 
                 onClicked: if (swipe.complete) {
                                lastConnectionsModel.removeConnection(ipText)
@@ -117,7 +132,9 @@ Pane {
 
                 sourceComponent: swipeDelegateComponent
 
+                property string hostName: host
                 property string ipText: ip
+                property string dateText: date
 
                 // Can't find a way to do this in the SwipeDelegate component itself,
                 // so do it here instead.

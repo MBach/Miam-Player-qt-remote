@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     playlistmanagermodel.cpp \
     remoteclient.cpp \
     trackdao.cpp \
-    wifichecker.cpp
+    wifichecker.cpp \
+    networkscannermodel.cpp
 
 lupdate_only{
 SOURCES = *.qml \
@@ -41,7 +42,8 @@ HEADERS += coverprovider.h \
     playlistmanagermodel.h \
     remoteclient.h \
     trackdao.h \
-    wifichecker.h
+    wifichecker.h \
+    networkscannermodel.h
 
 TRANSLATIONS = translations/miam-player-remote_en.ts \
     translations/miam-player-remote_fr.ts

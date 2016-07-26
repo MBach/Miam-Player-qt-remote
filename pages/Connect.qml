@@ -3,9 +3,14 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 
 import QtQuick.Controls.Material 2.0
+import org.miamplayer.remote 1.0
 
 Pane {
     id: connectPane
+
+    NetworkScannerModel {
+        id: networkScannerModel
+    }
 
     Popup {
         id: connectDialog
@@ -43,6 +48,46 @@ Pane {
         }
     }
 
+    Popup {
+        id: scanNetworkPopup
+        modal: true
+        focus: true
+        x: (window.width - width) / 2
+        y: window.height / 6
+        width: Math.min(window.width, window.height) / 5 * 4
+        contentHeight: scanColumn.height
+        contentWidth: scanColumn.width
+        ColumnLayout {
+            id: scanColumn
+            spacing: 20
+
+            Label {
+                text: qsTr("Scanning...")
+                font.bold: true
+            }
+
+            ProgressBar {
+                indeterminate: true
+            }
+
+            ListView {
+                id: scanNetworkListView
+                model: networkScannerModel
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                width: parent.width
+                clip: true
+                /*delegate: Loader {
+                    id: delegateNetworkLoader
+                    width: listView.width
+                    sourceComponent: radioDelegateComponent
+                    property string ipText: ip
+                    property ListView view: listView
+                }*/
+            }
+        }
+    }
+
     ColumnLayout {
         id: column
         transformOrigin: Item.Center
@@ -56,24 +101,36 @@ Pane {
             width: parent.width
             wrapMode: Label.Wrap
             horizontalAlignment: Qt.AlignLeft
-            text: qsTr("Connect to Miam-Player")
+            text: qsTr("Scan network to find Miam-Player")
             color: Material.color(Material.Grey)
-            bottomPadding: 8
         }
 
-        Image {
-            id: logo
-            anchors.top: connectLabel.bottom
+        Button {
+            id: scanNetworkButton
+            text: qsTr("Scan network")
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            onClicked: {
+                scanNetworkPopup.open()
+                networkScannerModel.scanNetwork()
+            }
+        }
+
+        Label {
+            id: directConnectLabel
             Layout.fillWidth: true
-            Layout.preferredHeight: 100
-            horizontalAlignment: Image.AlignHCenter
-            fillMode: Image.PreserveAspectFit
-            source: "qrc:/images/miam-player_logo.png"
+            width: parent.width
+            wrapMode: Label.Wrap
+            horizontalAlignment: Qt.AlignLeft
+            text: qsTr("Connect manually")
+            topPadding: 0
+            bottomPadding: 8
+            verticalAlignment: Text.AlignVCenter
+            color: Material.color(Material.Grey)
         }
 
         TextField {
             id: ipHostAddress
-            anchors.top: logo.bottom
+            anchors.top: directConnectLabel.bottom
             anchors.left: parent.left
             anchors.right: parent.right
             placeholderText: qsTr("Type an IP address")
@@ -107,15 +164,29 @@ Pane {
             id: radioDelegateComponent
 
             RadioDelegate {
-                text: ipText
+                id: control
+                text: hostName
                 width: parent.width
+                height: 90
                 ButtonGroup.group: radioButtonGroup
+
+                contentItem: Label {
+                    rightPadding: control.indicator.width + control.spacing
+                    text: hostName + "<br>" + dateText
+                    font: control.font
+                    color: Material.foreground
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    textFormat: Text.RichText
+                }
+
                 onClicked: {
                     headerConnect.text = qsTr("Connecting...")
                     bodyConnect.visible = false
                     busy.visible = true
                     connectDialog.open()
-                    remoteClient.establishConnectionToServer(text)
+                    remoteClient.establishConnectionToServer(ipText)
                 }
             }
         }
@@ -133,7 +204,9 @@ Pane {
                 id: delegateLoader
                 width: listView.width
                 sourceComponent: radioDelegateComponent
+                property string hostName: host
                 property string ipText: ip
+                property string dateText: date
                 property ListView view: listView
             }
             focus: true
@@ -143,6 +216,7 @@ Pane {
     Connections {
         target: remoteClient
         onConnectionSucceded: {
+            lastConnectionsModel.addConnection(hostName, ip)
             connectDialog.close()
             drawer.loadPage("Remote", "qrc:/pages/remote")
         }
