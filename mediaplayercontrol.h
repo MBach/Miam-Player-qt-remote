@@ -5,6 +5,11 @@
 
 #include "remoteclient.h"
 
+/**
+ * \brief		The MediaPlayerControl class
+ * \author		Matthieu Bachelier
+ * \copyright   GNU General Public License v3
+ */
 class MediaPlayerControl : public QObject
 {
 	Q_OBJECT

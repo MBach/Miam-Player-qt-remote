@@ -21,7 +21,8 @@ QHash<int, QByteArray> NetworkScannerModel::roleNames() const {
 	QHash<int, QByteArray> roles;
 	roles[HostNameRole] = "host";
 	roles[IpRole] = "ip";
-	roles[DateRole] = "date";
+	roles[ReadableDateRole] = "date";
+	roles[IsoDateRole] = "isoDate";
 	return roles;
 }
 

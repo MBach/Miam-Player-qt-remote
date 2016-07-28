@@ -2,13 +2,14 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 import Qt.labs.settings 1.0
+import QtQuick.Controls.Material 2.0
 
 ApplicationWindow {
     id: window
     visible: true
     width: 378
     height: 588
-    title: "Miam-Player Remote"
+    title: qsTr("Miam-Player Remote")
 
     Settings {
         id: settings
@@ -32,7 +33,6 @@ ApplicationWindow {
 
             Label {
                 id: titleLabel
-                text: "Home"
                 font.pixelSize: 20
                 elide: Label.ElideRight
                 horizontalAlignment: Qt.AlignLeft
@@ -55,7 +55,7 @@ ApplicationWindow {
                     transformOrigin: Menu.TopRight
 
                     MenuItem {
-                        text: "About"
+                        text: qsTr("About")
                         onTriggered: aboutDialog.open()
                     }
                 }
@@ -131,7 +131,7 @@ ApplicationWindow {
                 Layout.topMargin: 15
                 height: 30
                 Label {
-                    text: "View"
+                    text: qsTr("View")
                 }
                 Image {
                     id: arrow
@@ -238,28 +238,63 @@ ApplicationWindow {
         focus: true
         x: (window.width - width) / 2
         y: window.height / 6
-        width: Math.min(window.width, window.height) / 3 * 2
-        contentHeight: startupColumn.height
-
+        width: Math.min(window.width, window.height) / 5 * 4
         closePolicy: Popup.NoAutoClose
 
-        Column {
+        height: startupColumn.height + topPadding + bottomPadding
+        contentItem: ColumnLayout {
+
             id: startupColumn
             spacing: 20
 
             Label {
+                id: noWifiLabel
                 text: qsTr("No WiFi detected")
                 font.bold: true
             }
 
             Label {
-                wrapMode: Label.Wrap
+                wrapMode: Label.WordWrap
                 text: qsTr("Please enable Wifi to use this App.")
             }
-
             Label {
-                wrapMode: Label.Wrap
-                text: qsTr("This popup will close automatically when connected!")
+                wrapMode: Label.WordWrap
+                text: qsTr("Would you like to turn on Wifi?")
+            }
+            BusyIndicator {
+                id: wifiBusyIndicator
+                running: true
+                visible: false
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            RowLayout {
+                id: wifiRowLayout
+                spacing: 10
+                Button {
+                    id: exitButton
+                    text: "Exit"
+                    onClicked: Qt.quit()
+                    Material.background: "transparent"
+                    Material.elevation: 0
+                    Layout.preferredWidth: 0
+                    Layout.fillWidth: true
+                }
+                Button {
+                    id: activateWifiButton
+                    text: "Ok"
+                    onClicked: {
+                        wifiRowLayout.visible = false
+                        wifiBusyIndicator.visible = true
+                        wifiChecker.enableWifi()
+                    }
+
+                    Material.foreground: Material.color(Material.Indigo)
+                    Material.background: "transparent"
+                    Material.elevation: 0
+                    Layout.preferredWidth: 0
+                    Layout.fillWidth: true
+                }
             }
         }
     }
@@ -270,6 +305,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        drawer.loadPage(qsTr("Connect"), "qrc:/pages/connect")
         if (!wifiChecker.isOk()) {
             startupDialog.open()
         }

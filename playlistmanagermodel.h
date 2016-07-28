@@ -4,6 +4,11 @@
 #include <QStringListModel>
 #include "remoteclient.h"
 
+/**
+ * \brief		The PlaylistManagerModel class
+ * \author		Matthieu Bachelier
+ * \copyright   GNU General Public License v3
+ */
 class PlaylistManagerModel : public QStringListModel
 {
 	Q_OBJECT

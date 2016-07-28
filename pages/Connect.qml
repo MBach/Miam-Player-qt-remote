@@ -1,8 +1,9 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
-
 import QtQuick.Controls.Material 2.0
+import Qt.labs.settings 1.0
+
 import org.miamplayer.remote 1.0
 
 Pane {
@@ -218,7 +219,7 @@ Pane {
         onConnectionSucceded: {
             lastConnectionsModel.addConnection(hostName, ip)
             connectDialog.close()
-            drawer.loadPage("Remote", "qrc:/pages/remote")
+            drawer.loadPage(qsTr("Remote"), "qrc:/pages/remote")
         }
 
         onConnectionFailed: {
@@ -226,6 +227,19 @@ Pane {
             bodyConnect.visible = true
             busy.visible = false
             connectDialog.open()
+        }
+    }
+
+    Settings {
+        id: settings
+        //property int port: 5600
+        property bool autoConnect: true
+    }
+
+    Component.onCompleted: {
+        if (settings.autoConnect && listView.count > 0) {
+            console.log("last IP: " + lastConnectionsModel.lastConnectionIP())
+            remoteClient.establishConnectionToServer(lastConnectionsModel.lastConnectionIP())
         }
     }
 }

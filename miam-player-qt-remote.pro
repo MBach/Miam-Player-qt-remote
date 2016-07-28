@@ -3,6 +3,7 @@ TEMPLATE = app
 TARGET = MiamPlayer-Remote
 
 QT += quick quickcontrols2 multimedia network
+android: QT += androidextras
 
 CONFIG += console qtquickcompiler
 
@@ -22,7 +23,8 @@ SOURCES = *.qml \
     pages/*.qml
 }
 
-OTHER_FILES += pages/*.qml
+OTHER_FILES += pages/*.qml \
+    android/src/org/miamplayer/remote/utils/WifiActivator.java
 
 RESOURCES += miamplayer-remote.qrc
 
@@ -33,7 +35,8 @@ DISTFILES += miamplayer-remote.qml \
     android/res/values/libs.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+    android/gradlew.bat \
+    android/WifiActivator.java
 
 HEADERS += coverprovider.h \
     genericdao.h \

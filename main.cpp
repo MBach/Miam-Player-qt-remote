@@ -22,9 +22,9 @@
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication::setOrganizationName(COMPANY);
-    QGuiApplication::setApplicationName(SOFT);
-    QGuiApplication::setApplicationVersion(VERSION);
+	QGuiApplication::setOrganizationName(COMPANY);
+	QGuiApplication::setApplicationName(SOFT);
+	QGuiApplication::setApplicationVersion(VERSION);
 	QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 	// Register some classes first
@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 	qmlRegisterType<NetworkScannerModel>("org.miamplayer.remote", 1, 0, "NetworkScannerModel");
 
 	// Translate the UI
-    QGuiApplication app(argc, argv);
+	QGuiApplication app(argc, argv);
+
 	QString language = QLocale::system().uiLanguages().first().left(2);
 	QTranslator playerTranslator;
 	bool b = playerTranslator.load(":/translations/miam-player-remote_" + language + ".qm");
@@ -43,7 +44,7 @@ int main(int argc, char *argv[])
 	qDebug() << Q_FUNC_INFO << language << b << c;
 
 	QQuickStyle::setStyle("Material");
-    QQmlApplicationEngine engine;
+	QQmlApplicationEngine engine;
 	CoverProvider *coverProvider = new CoverProvider;
 	RemoteClient remoteClient(coverProvider);
 	LastConnectionsModel lastConnectionsModel;
@@ -56,6 +57,8 @@ int main(int argc, char *argv[])
 	engine.rootContext()->setContextProperty("mediaPlayerControl", &mediaPlayerControl);
 	engine.addImageProvider(QString("coverprovider"), coverProvider);
 
+	QObject::connect(&engine, &QQmlApplicationEngine::quit, qApp, &QCoreApplication::quit);
+
 	engine.load(QUrl("qrc:/pages/mainPage"));
-    return app.exec();
+	return app.exec();
 }

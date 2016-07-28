@@ -1,8 +1,8 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
-import Qt.labs.settings 1.0
 import QtQuick.Controls.Material 2.0
+import Qt.labs.settings 1.0
 
 Pane {
     id: settingsPane
@@ -12,6 +12,7 @@ Pane {
     Settings {
         id: settings
         property int port: 5600
+        property bool autoConnect: true
     }
 
     ColumnLayout {
@@ -59,9 +60,10 @@ Pane {
             anchors.left: parent.left
             anchors.right: parent.right
             clip: false
-            checked: true
+            checked: settings.autoConnect
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             Layout.fillWidth: true
+            onClicked: settings.autoConnect = checked
         }
 
         Label {
