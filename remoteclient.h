@@ -40,7 +40,7 @@ public:
 
 	Q_INVOKABLE inline bool isConnecting() const { return _isConnecting; }
 
-	inline bool isConnected() const { return _isConnected; }
+	Q_INVOKABLE inline bool isConnected() const { return _isConnected; }
 
 	void requestActivePlaylists();
 

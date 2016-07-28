@@ -14,6 +14,73 @@ Pane {
     }
 
     Popup {
+        id: startupDialog
+        modal: true
+        focus: true
+        x: (window.width - width) / 2
+        y: window.height / 6
+        width: Math.min(window.width, window.height) / 5 * 4
+        closePolicy: Popup.NoAutoClose
+
+        height: startupColumn.height + topPadding + bottomPadding
+        contentItem: ColumnLayout {
+
+            id: startupColumn
+            spacing: 20
+
+            Label {
+                id: noWifiLabel
+                text: qsTr("No WiFi detected")
+                font.bold: true
+            }
+
+            Label {
+                wrapMode: Label.WordWrap
+                text: qsTr("Please enable Wifi to use this App.")
+            }
+            Label {
+                wrapMode: Label.WordWrap
+                text: qsTr("Would you like to turn on Wifi?")
+            }
+            BusyIndicator {
+                id: wifiBusyIndicator
+                running: true
+                visible: false
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            RowLayout {
+                id: wifiRowLayout
+                spacing: 10
+                Button {
+                    id: exitButton
+                    text: "Exit"
+                    onClicked: Qt.quit()
+                    Material.background: "transparent"
+                    Material.elevation: 0
+                    Layout.preferredWidth: 0
+                    Layout.fillWidth: true
+                }
+                Button {
+                    id: activateWifiButton
+                    text: "Ok"
+                    onClicked: {
+                        wifiRowLayout.visible = false
+                        wifiBusyIndicator.visible = true
+                        wifiChecker.enableWifi()
+                    }
+
+                    Material.foreground: Material.color(Material.Indigo)
+                    Material.background: "transparent"
+                    Material.elevation: 0
+                    Layout.preferredWidth: 0
+                    Layout.fillWidth: true
+                }
+            }
+        }
+    }
+
+    Popup {
         id: connectDialog
         modal: true
         focus: true
@@ -214,6 +281,21 @@ Pane {
         }
     }
 
+    Settings {
+        id: settings
+        property bool autoConnect: true
+    }
+
+    Connections {
+        target: wifiChecker
+        onCloseStartupPopup: {
+            startupDialog.close()
+            if (settings.autoConnect && listView.count > 0) {
+                remoteClient.establishConnectionToServer(lastConnectionsModel.lastConnectionIP())
+            }
+        }
+    }
+
     Connections {
         target: remoteClient
         onConnectionSucceded: {
@@ -230,16 +312,13 @@ Pane {
         }
     }
 
-    Settings {
-        id: settings
-        //property int port: 5600
-        property bool autoConnect: true
-    }
-
     Component.onCompleted: {
-        if (settings.autoConnect && listView.count > 0) {
-            console.log("last IP: " + lastConnectionsModel.lastConnectionIP())
-            remoteClient.establishConnectionToServer(lastConnectionsModel.lastConnectionIP())
+        if (wifiChecker.isOk()) {
+            if (!remoteClient.isConnected() && settings.autoConnect && listView.count > 0) {
+                remoteClient.establishConnectionToServer(lastConnectionsModel.lastConnectionIP())
+            }
+        } else {
+            startupDialog.open()
         }
     }
 }

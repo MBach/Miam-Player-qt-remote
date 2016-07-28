@@ -230,84 +230,9 @@ ApplicationWindow {
                 wrapMode: Label.Wrap
             }
         }
-    }
-
-    Popup {
-        id: startupDialog
-        modal: true
-        focus: true
-        x: (window.width - width) / 2
-        y: window.height / 6
-        width: Math.min(window.width, window.height) / 5 * 4
-        closePolicy: Popup.NoAutoClose
-
-        height: startupColumn.height + topPadding + bottomPadding
-        contentItem: ColumnLayout {
-
-            id: startupColumn
-            spacing: 20
-
-            Label {
-                id: noWifiLabel
-                text: qsTr("No WiFi detected")
-                font.bold: true
-            }
-
-            Label {
-                wrapMode: Label.WordWrap
-                text: qsTr("Please enable Wifi to use this App.")
-            }
-            Label {
-                wrapMode: Label.WordWrap
-                text: qsTr("Would you like to turn on Wifi?")
-            }
-            BusyIndicator {
-                id: wifiBusyIndicator
-                running: true
-                visible: false
-                Layout.alignment: Qt.AlignHCenter
-            }
-
-            RowLayout {
-                id: wifiRowLayout
-                spacing: 10
-                Button {
-                    id: exitButton
-                    text: "Exit"
-                    onClicked: Qt.quit()
-                    Material.background: "transparent"
-                    Material.elevation: 0
-                    Layout.preferredWidth: 0
-                    Layout.fillWidth: true
-                }
-                Button {
-                    id: activateWifiButton
-                    text: "Ok"
-                    onClicked: {
-                        wifiRowLayout.visible = false
-                        wifiBusyIndicator.visible = true
-                        wifiChecker.enableWifi()
-                    }
-
-                    Material.foreground: Material.color(Material.Indigo)
-                    Material.background: "transparent"
-                    Material.elevation: 0
-                    Layout.preferredWidth: 0
-                    Layout.fillWidth: true
-                }
-            }
-        }
-    }
-
-    Connections {
-        target: wifiChecker
-        onCloseStartupPopup: startupDialog.close()
-    }
+    } 
 
     Component.onCompleted: {
         drawer.loadPage(qsTr("Connect"), "qrc:/pages/connect")
-        if (!wifiChecker.isOk()) {
-            startupDialog.open()
-        }
     }
 }
