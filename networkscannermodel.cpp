@@ -39,14 +39,14 @@ void NetworkScannerModel::scanNetwork()
 		}
 	}
 
-	QByteArray datagram;
-	datagram.append(ip);
+	//QByteArray datagram;
+	//datagram.append(ip);
 
-	QUdpSocket *udpSocket = new QUdpSocket(this);
-	uint port = QSettings().value("port", 5600).toUInt();
+	//QUdpSocket *udpSocket = new QUdpSocket(this);
+	//uint port = QSettings().value("port", 5600).toUInt();
 	//udpSocket->writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, port);
 
-	connect(udpSocket, &QUdpSocket::readyRead, this, [=]() {
+	/*connect(udpSocket, &QUdpSocket::readyRead, this, [=]() {
 		qDebug() << Q_FUNC_INFO << "I've received a response from server, yay";
 		if (udpSocket->hasPendingDatagrams()) {
 			QByteArray datagram;
@@ -54,7 +54,7 @@ void NetworkScannerModel::scanNetwork()
 			udpSocket->readDatagram(datagram.data(), datagram.size());
 			qDebug() << Q_FUNC_INFO << "The server told me his IP address:" << datagram.toStdString().data();
 		}
-	});
+	});*/
 
 	QString serverIp = "192.168.0.1";
 	//emit serverFound(serverIp);

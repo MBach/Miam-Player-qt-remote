@@ -9,22 +9,22 @@ CONFIG += console qtquickcompiler
 
 SOURCES += main.cpp \
     coverprovider.cpp \
-    genericdao.cpp \
     lastconnectionsmodel.cpp \
     mediaplayercontrol.cpp \
+    networkscannermodel.cpp \
     playlistmanagermodel.cpp \
     remoteclient.cpp \
-    trackdao.cpp \
-    wifichecker.cpp \
-    networkscannermodel.cpp
+    wifichecker.cpp
 
 lupdate_only{
 SOURCES = *.qml \
     pages/*.qml
 }
 
-OTHER_FILES += pages/*.qml \
-    android/src/org/miamplayer/remote/utils/WifiActivator.java
+OTHER_FILES += pages/*.qml
+android: {
+OTHER_FILES += android/src/org/miamplayer/remote/utils/WifiActivator.java
+}
 
 RESOURCES += miamplayer-remote.qrc
 
@@ -39,14 +39,12 @@ DISTFILES += miamplayer-remote.qml \
     android/WifiActivator.java
 
 HEADERS += coverprovider.h \
-    genericdao.h \
     lastconnectionsmodel.h \
+    networkscannermodel.h \
     mediaplayercontrol.h \
     playlistmanagermodel.h \
     remoteclient.h \
-    trackdao.h \
-    wifichecker.h \
-    networkscannermodel.h
+    wifichecker.h
 
 TRANSLATIONS = translations/miam-player-remote_en.ts \
     translations/miam-player-remote_fr.ts

@@ -1,20 +1,25 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
-import Qt.labs.settings 1.0
 import QtQuick.Controls.Material 2.0
+import QtQuick.Window 2.2
+import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: window
     visible: true
-    width: 378
-    height: 588
+    //width: 378
+    //height: 588
+    width: 588
+    height: 278
     title: qsTr("Miam-Player Remote")
 
     Settings {
         id: settings
         property int port: 5600
     }
+
+    property bool isPortrait: Screen.primaryOrientation === Qt.PortraitOrientation || Screen.primaryOrientation === Qt.InvertedPortraitOrientation
 
     header: ToolBar {
         RowLayout {
@@ -107,7 +112,7 @@ ApplicationWindow {
                 height: 30
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: drawer.loadPage(parent.text, "qrc:/pages/remote")
+                    onClicked: loadRemotePage()
                 }
             }
 
@@ -180,7 +185,7 @@ ApplicationWindow {
                     text: qsTr("Unique Mode")
                     ButtonGroup.group: radioGroup
                     onClicked: {
-                        drawer.loadPage("Remote", "qrc:/pages/remote")
+                        loadRemotePage()
                         columnLayout.closeMenu()
                     }
                 }
@@ -203,6 +208,14 @@ ApplicationWindow {
                     }
                 }
             }
+        }
+    }
+
+    function loadRemotePage() {
+        if (isPortrait) {
+            drawer.loadPage(qsTr("Remote"), "qrc:/pages/remotePortrait")
+        } else {
+            drawer.loadPage(qsTr("Remote"), "qrc:/pages/remoteLandscape")
         }
     }
 
@@ -230,7 +243,9 @@ ApplicationWindow {
                 wrapMode: Label.Wrap
             }
         }
-    } 
+    }
+
+    onIsPortraitChanged: loadRemotePage()
 
     Component.onCompleted: {
         drawer.loadPage(qsTr("Connect"), "qrc:/pages/connect")

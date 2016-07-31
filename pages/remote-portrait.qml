@@ -1,13 +1,15 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
+import QtQuick.Window 2.2
 import QtGraphicalEffects 1.0
 
 import QtQuick.Controls.Material 2.0
 
 Pane {
-    id: remotePane
+    id: remotePortrait
 
+    // Default state layout: portrait
     ColumnLayout {
         id: columnLayout
         anchors.right: parent.right
@@ -29,45 +31,8 @@ Pane {
             anchors.top: volumeLabel.bottom
             value: 0.5
             Layout.fillWidth: true
+            orientation: Qt.Horizontal
             anchors.horizontalCenter: parent.horizontalCenter
-
-            /*function sendToServer(value) {
-                remoteClient.setVolume(value)
-            }
-            onValueChanged: sendToServer(value)
-
-            Connections {
-                target: remoteClient
-                onAboutToUpdateVolume: {
-                    volumeSlider.valueChanged.disconnect(volumeSlider.sendToServer)
-                    volumeSlider.value = volume
-                    volumeSlider.valueChanged.connect(volumeSlider.sendToServer)
-                }
-            }*/
-
-            /*onValueChanged: remoteClient.setVolume(value)
-
-            Connections {
-                target: remoteClient
-                onAboutToUpdateVolume: {
-                    volumeSlider.valueChanged.disconnect(remoteClient.setVolume)
-                    volumeSlider.value = volume
-                    volumeSlider.valueChanged.connect(remoteClient.setVolume)
-                }
-            }*/
-
-            Connections {
-                target: remoteClient
-                onAboutToUpdateVolume: {
-                    volumeSlider.value = volume
-                }
-            }
-            Connections {
-                target: volumeSlider
-                onValueChanged: {
-                    remoteClient.setVolume(volumeSlider.value)
-                }
-            }
         }
 
         RowLayout {
@@ -76,10 +41,10 @@ Pane {
             anchors.right: parent.right
             anchors.left: parent.left
             anchors.top: volumeSlider.bottom
-            implicitHeight: logo.height
+            implicitHeight: cover.height
 
             Image {
-                id: logo
+                id: cover
                 Layout.fillHeight: false
                 anchors.horizontalCenter: layoutRect.horizontalCenter
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -109,7 +74,7 @@ Pane {
     }
 
     RowLayout {
-        id: row
+        id: rowLayout
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         anchors.right: parent.right
@@ -133,6 +98,34 @@ Pane {
                 anchors.fill: parent
                 onClicked: {
                     mediaPlayerControl.previous()
+                }
+            }
+
+            ColorOverlay {
+                id: colorOverlayPrevious
+                anchors.fill: previous
+                source: previous
+                color: "transparent"
+                cached: true
+            }
+
+            states: [
+                State {
+                    when: maPrevious.pressed
+                    PropertyChanges {
+                        target: colorOverlayPrevious
+                        //color: Material.color(Material.Purple)
+                        visible: true
+                    }
+                }
+            ]
+
+            transitions: Transition {
+                ColorAnimation {
+                    from: "transparent"
+                    to: Material.color(Material.Purple)
+                    duration: 500
+                    easing.type: Easing.OutSine
                 }
             }
         }
@@ -169,12 +162,53 @@ Pane {
                     mediaPlayerControl.next()
                 }
             }
-        }
 
-        Connections {
-            target: remoteClient
-            onPlaying: playPause.source = "qrc:/images/play.png"
-            onPaused: playPause.source = "qrc:/images/pause.png"
+            ColorOverlay {
+                id: colorOverlayNext
+                anchors.fill: next
+                source: next
+                color: "transparent"
+                cached: true
+            }
+
+            states: [
+                State {
+                    when: maNext.pressed
+                    PropertyChanges {
+                        target: colorOverlayNext
+                        //color: Material.color(Material.Purple)
+                        visible: true
+                    }
+                }
+            ]
+
+            transitions: Transition {
+                ColorAnimation {
+                    from: "transparent"
+                    to: Material.color(Material.Purple)
+                    duration: 500
+                    easing.type: Easing.OutSine
+                }
+            }
+        }
+    }
+
+    Connections {
+        target: volumeSlider
+        onValueChanged: {
+            remoteClient.setVolume(volumeSlider.value)
+        }
+    }
+    Connections {
+        target: remoteClient
+        onAboutToUpdateVolume: {
+            volumeSlider.value = volume
+        }
+        onPlaying: playPause.source = "qrc:/images/play.png"
+        onPaused: playPause.source = "qrc:/images/pause.png"
+        onStopped: cover.source = "image://coverprovider/default"
+        onNewCoverReceived: {
+            cover.source = "image://coverprovider/" + random
         }
     }
 }

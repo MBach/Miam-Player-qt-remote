@@ -47,7 +47,7 @@ void RemoteClient::setVolume(qreal v)
 	out.setVersion(QDataStream::Qt_5_5);
 	out << CMD_Volume;
 	QByteArray ba;
-	ba.append(reinterpret_cast<const char*>(&v), sizeof(v));
+	ba.append(QString::number(v));
 	out << ba;
 	_socket->write(data);
 }
@@ -82,8 +82,6 @@ void RemoteClient::socketStateChanged(QAbstractSocket::SocketState state)
 	}
 }
 
-#include "trackdao.h"
-
 void RemoteClient::socketReadyRead()
 {
 	//qDebug() << Q_FUNC_INFO << "bytesAvailable:" << _socket->bytesAvailable() << "sizeof(Command)" << sizeof(Command);
@@ -93,49 +91,33 @@ void RemoteClient::socketReadyRead()
 	int command;
 	in >> command;
 
-	//qDebug() << Q_FUNC_INFO << "command:" << command;
-
 	switch (command) {
 	case CMD_Playback:
 		qDebug() << Q_FUNC_INFO << "cmd:playback";
 		// Nothing
 		break;
 	case CMD_State: {
-		qDebug() << Q_FUNC_INFO << "cmd:state";
-		QByteArray message;
+		QString message;
 		in >> message;
-		QMediaPlayer::State state = (QMediaPlayer::State)(message.toInt());
-		//int state = s.toInt();
-		//in >> state;
-		switch (state) {
-		case QMediaPlayer::PlayingState:
-		case QMediaPlayer::StoppedState:
-			emit playing();
-			break;
-		case QMediaPlayer::PausedState:
+		qDebug() << Q_FUNC_INFO << "cmd:state" << message;
+		if (message == "paused") {
 			emit paused();
-			break;
+		} else if (message == "playing"){
+			emit playing();
+		} else {
+			emit stopped();
 		}
 		break;
 	}
 	case CMD_Track: {
 		qDebug() << Q_FUNC_INFO << "cmd:track";
-		//QDataStream ds(message);
-		/*int daoSize;
-		in >> daoSize;
-		if (daoSize > _socket->bytesAvailable()) {
-			qDebug() << Q_FUNC_INFO << "we don't have enough data to create a TrackDao!";
-		}*/
 		QString uri, artistAlbum, album, title, trackNumber;
-		//TrackDAO track;
-		//in >> track;
-		//qDebug() << Q_FUNC_INFO << "decoded track" << track.uri() << track.artistAlbum() << track.album() << track.title();
 		in >> uri;
 		in >> artistAlbum;
 		in >> album;
 		in >> title;
 		in >> trackNumber;
-		qDebug() << Q_FUNC_INFO << "decoded track" << uri << artistAlbum << album << title << trackNumber;
+		qDebug() << Q_FUNC_INFO << "cmd:track" << uri << artistAlbum << album << title << trackNumber;
 
 		break;
 	}
@@ -143,7 +125,6 @@ void RemoteClient::socketReadyRead()
 		QByteArray message;
 		in >> message;
 		qreal v = QString::fromStdString(message.toStdString()).toFloat();
-		//qreal v = *reinterpret_cast<const qreal*>(message.data());
 		qDebug() << Q_FUNC_INFO << "cmd:volume" << v;
 		emit aboutToUpdateVolume(v);
 		break;
@@ -163,15 +144,16 @@ void RemoteClient::socketReadyRead()
 		qDebug() << Q_FUNC_INFO << "coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
 
 		if (coverSize > _socket->bytesAvailable()) {
-			//qDebug() << Q_FUNC_INFO << "we don't received enough bytes to display cover! Waiting...";
-			_socket->readAll();
-			return;
-			//_socket->waitForReadyRead(1000);
-			//qDebug() << Q_FUNC_INFO << "coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
+			qDebug() << Q_FUNC_INFO << "we didn't receive enough bytes to display cover! Waiting...";
+			//_socket->readAll();
+			//return;
+			_socket->waitForReadyRead(1000);
+			qDebug() << Q_FUNC_INFO << "coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
 		}
 		QByteArray message;
 		in >> message;
 		_coverProvider->generateCover(message);
+		emit newCoverReceived(qrand());
 		break;
 	}
 	case CMD_AllPlaylists: {
@@ -201,6 +183,9 @@ void RemoteClient::socketReadyRead()
 
 void RemoteClient::establishConnectionToServer(const QString &ip)
 {
+	if (_isConnecting) {
+		return;
+	}
 	QHostAddress hostAddress(ip);
 	bool ok = false;
 	hostAddress.toIPv4Address(&ok);
@@ -211,8 +196,6 @@ void RemoteClient::establishConnectionToServer(const QString &ip)
 			_socket->disconnectFromHost();
 		}
 		_socket->connectToHost(hostAddress, port, QTcpSocket::ReadWrite);
-	} else {
-		qDebug() << Q_FUNC_INFO << "Your IP cannot be processed!";
 	}
 }
 

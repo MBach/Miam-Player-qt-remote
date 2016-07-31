@@ -13,7 +13,6 @@
 #include "playlistmanagermodel.h"
 #include "remoteclient.h"
 #include "wifichecker.h"
-#include "trackdao.h"
 
 #include <QQuickStyle>
 #include <QTranslator>
@@ -28,9 +27,6 @@ int main(int argc, char *argv[])
 	QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 	// Register some classes first
-	qRegisterMetaType<GenericDAO>();
-	qRegisterMetaType<TrackDAO>();
-	qRegisterMetaTypeStreamOperators<TrackDAO>("TrackDAO");
 	qmlRegisterType<PlaylistManagerModel>("org.miamplayer.remote", 1, 0, "PlaylistManagerModel");
 	qmlRegisterType<NetworkScannerModel>("org.miamplayer.remote", 1, 0, "NetworkScannerModel");
 

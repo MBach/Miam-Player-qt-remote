@@ -9,16 +9,18 @@ CoverProvider::CoverProvider()
 
 }
 
-QImage CoverProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
+QImage CoverProvider::requestImage(const QString &id, QSize *, const QSize &)
 {
 	qDebug() << Q_FUNC_INFO << _hasReceivedRemoteData << id;
 	if (_hasReceivedRemoteData) {
 		_hasReceivedRemoteData = false;
-		return QImage::fromData(_cover);
-	} else {
-		QImage img(":/images/disc.png");
-		return img;
+		QImage img = QImage::fromData(_cover);
+		if (!img.isNull()) {
+			return img;
+		}
 	}
+	QImage img(":/images/disc.png");
+	return img;
 }
 
 void CoverProvider::generateCover(const QByteArray &cover)

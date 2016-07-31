@@ -64,8 +64,10 @@ signals:
 	void aboutToSendPlaylists(const QStringList &playlists);
 	void connectionSucceded(const QString &hostName, const QString &ip);
 	void connectionFailed();
-	void playing();
+	void newCoverReceived(int random);
 	void paused();
+	void playing();
+	void stopped();
 };
 
 #endif // REMOTECLIENT_H

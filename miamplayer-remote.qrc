@@ -45,8 +45,9 @@
         <file alias="history">pages/history.qml</file>
         <file alias="playlistManager">pages/playlist-manager.qml</file>
         <file alias="playlists">pages/playlists.qml</file>
-        <file alias="remote">pages/remote.qml</file>
         <file alias="settings">pages/settings.qml</file>
         <file alias="mainPage">miamplayer-remote.qml</file>
+        <file alias="remoteLandscape">pages/remote-landscape.qml</file>
+        <file alias="remotePortrait">pages/remote-portrait.qml</file>
     </qresource>
 </RCC>
