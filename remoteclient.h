@@ -33,8 +33,9 @@ public:
 							CMD_Volume			= 3,
 							CMD_Connection		= 4,
 							CMD_Cover			= 5,
+							CMD_Position		= 6,
 							CMD_ActivePlaylists	= 7,
-							CMD_AllPlaylists	= 6};
+							CMD_AllPlaylists	= 8};
 
 	explicit RemoteClient(CoverProvider *coverProvider, QObject *parent = 0);
 
@@ -68,6 +69,7 @@ signals:
 	void paused();
 	void playing();
 	void stopped();
+	void progressChanged(qreal progress);
 };
 
 #endif // REMOTECLIENT_H

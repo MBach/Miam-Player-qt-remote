@@ -301,8 +301,7 @@ Pane {
         onConnectionSucceded: {
             lastConnectionsModel.addConnection(hostName, ip)
             connectDialog.close()
-            /// XXX
-            window.loadRemotePage()
+            drawer.loadPage(qsTr("Remote"), "qrc:/pages/remote")
         }
 
         onConnectionFailed: {

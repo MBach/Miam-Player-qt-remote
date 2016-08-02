@@ -121,6 +121,15 @@ void RemoteClient::socketReadyRead()
 
 		break;
 	}
+	case CMD_Position: {
+		qint64 pos, duration;
+		in >> pos;
+		in >> duration;
+		qDebug() << Q_FUNC_INFO << "cmd:position" << pos << duration;
+		qreal ratio = (qreal)pos / (qreal)duration;
+		emit progressChanged(ratio);
+		break;
+	}
 	case CMD_Volume: {
 		QByteArray message;
 		in >> message;

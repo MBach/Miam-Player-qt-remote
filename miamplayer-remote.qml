@@ -11,7 +11,7 @@ ApplicationWindow {
     //width: 378
     //height: 588
     width: 588
-    height: 278
+    height: 378
     title: qsTr("Miam-Player Remote")
 
     Settings {
@@ -112,7 +112,7 @@ ApplicationWindow {
                 height: 30
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: loadRemotePage()
+                    onClicked: drawer.loadPage(parent.text, "qrc:/pages/remote")
                 }
             }
 
@@ -185,7 +185,7 @@ ApplicationWindow {
                     text: qsTr("Unique Mode")
                     ButtonGroup.group: radioGroup
                     onClicked: {
-                        loadRemotePage()
+                        drawer.loadPage(parent.text, "qrc:/pages/remote")
                         columnLayout.closeMenu()
                     }
                 }
@@ -208,14 +208,6 @@ ApplicationWindow {
                     }
                 }
             }
-        }
-    }
-
-    function loadRemotePage() {
-        if (isPortrait) {
-            drawer.loadPage(qsTr("Remote"), "qrc:/pages/remotePortrait")
-        } else {
-            drawer.loadPage(qsTr("Remote"), "qrc:/pages/remoteLandscape")
         }
     }
 
@@ -244,8 +236,6 @@ ApplicationWindow {
             }
         }
     }
-
-    onIsPortraitChanged: loadRemotePage()
 
     Component.onCompleted: {
         drawer.loadPage(qsTr("Connect"), "qrc:/pages/connect")
