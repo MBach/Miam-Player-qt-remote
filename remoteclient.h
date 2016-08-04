@@ -58,9 +58,12 @@ public slots:
 
 	void sendPlaybackCommand(const QString &command);
 
+	void setPosition(qreal p);
+
 	void setVolume(qreal v);
 
 signals:
+	void aboutToUpdateTrack(const QString &title, const QString &album, const QString &artist, int stars);
 	void aboutToUpdateVolume(qreal volume);
 	void aboutToSendPlaylists(const QStringList &playlists);
 	void connectionSucceded(const QString &hostName, const QString &ip);
@@ -69,7 +72,7 @@ signals:
 	void paused();
 	void playing();
 	void stopped();
-	void progressChanged(qreal progress);
+	void progressChanged(qreal progress, const QString &formattedTime);
 };
 
 #endif // REMOTECLIENT_H

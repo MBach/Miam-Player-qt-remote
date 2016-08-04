@@ -1,5 +1,6 @@
 #include "remoteclient.h"
 
+#include <QDateTime>
 #include <QHostAddress>
 #include <QMediaPlayer>
 #include <QQmlApplicationEngine>
@@ -37,18 +38,6 @@ void RemoteClient::requestAllPlaylists()
 	out.setVersion(QDataStream::Qt_5_5);
 	out << CMD_AllPlaylists;
 	out << QString();
-	_socket->write(data);
-}
-
-void RemoteClient::setVolume(qreal v)
-{
-	QByteArray data;
-	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_5);
-	out << CMD_Volume;
-	QByteArray ba;
-	ba.append(QString::number(v));
-	out << ba;
 	_socket->write(data);
 }
 
@@ -112,22 +101,28 @@ void RemoteClient::socketReadyRead()
 	case CMD_Track: {
 		qDebug() << Q_FUNC_INFO << "cmd:track";
 		QString uri, artistAlbum, album, title, trackNumber;
+		int stars;
 		in >> uri;
 		in >> artistAlbum;
 		in >> album;
 		in >> title;
 		in >> trackNumber;
-		qDebug() << Q_FUNC_INFO << "cmd:track" << uri << artistAlbum << album << title << trackNumber;
-
+		in >> stars;
+		qDebug() << Q_FUNC_INFO << "cmd:track" << uri << artistAlbum << album << title << trackNumber << stars;
+		emit aboutToUpdateTrack(title, album, artistAlbum, stars);
 		break;
 	}
 	case CMD_Position: {
 		qint64 pos, duration;
 		in >> pos;
 		in >> duration;
-		qDebug() << Q_FUNC_INFO << "cmd:position" << pos << duration;
 		qreal ratio = (qreal)pos / (qreal)duration;
-		emit progressChanged(ratio);
+
+		uint t = round(duration / 1000);
+		QString formattedTime = QDateTime::fromTime_t(pos / 1000).toString("mm:ss").append(" / ").append(QDateTime::fromTime_t(t).toString("mm:ss"));
+
+
+		emit progressChanged(ratio, formattedTime);
 		break;
 	}
 	case CMD_Volume: {
@@ -216,4 +211,28 @@ void RemoteClient::sendPlaybackCommand(const QString &command)
 	out << QByteArray::fromStdString(command.toStdString());
 	qint64 r = _socket->write(data);
 	qDebug() << Q_FUNC_INFO << command << ", bytes written" << r;
+}
+
+void RemoteClient::setPosition(qreal p)
+{
+	QByteArray data;
+	QDataStream out(&data, QIODevice::ReadWrite);
+	out.setVersion(QDataStream::Qt_5_5);
+	out << CMD_Position;
+	QByteArray ba;
+	ba.append(QString::number(p));
+	out << ba;
+	_socket->write(data);
+}
+
+void RemoteClient::setVolume(qreal v)
+{
+	QByteArray data;
+	QDataStream out(&data, QIODevice::ReadWrite);
+	out.setVersion(QDataStream::Qt_5_5);
+	out << CMD_Volume;
+	QByteArray ba;
+	ba.append(QString::number(v));
+	out << ba;
+	_socket->write(data);
 }
