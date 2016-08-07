@@ -6,8 +6,6 @@
 #include <QSettings>
 #include <QUdpSocket>
 
-#include <QtDebug>
-
 LastConnectionsModel::LastConnectionsModel(QObject *parent)
 	: QStandardItemModel(parent)
 {

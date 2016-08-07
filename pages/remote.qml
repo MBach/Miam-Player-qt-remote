@@ -2,25 +2,30 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.2
-import QtGraphicalEffects 1.0
+//import QtGraphicalEffects 1.0
 
 import QtQuick.Controls.Material 2.0
 
 Pane {
-    id: remoteLandscape
+    id: remotePane
     padding: 0
 
-    property int starCount: 5
+    property int activeStarCount: 0
+    property int inactiveStarCount: 0
 
     // 4 layouts for 2 display modes
 
     // Mode: Portrait
     ColumnLayout {
         id: portraitColumnLayout
+        clip: false
+        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+        anchors.bottomMargin: -407
+        anchors.rightMargin: 0
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: undefined
+        anchors.bottom: parent.top
 
         Label {
             id: volumeLabel
@@ -109,6 +114,7 @@ Pane {
                 fillMode: Image.PreserveAspectFit
                 anchors.fill: itemCover
                 source: "image://coverprovider/default"
+                //source: "qrc:/images/disc.png"
 
                 // DEBUG
                 MouseArea {
@@ -139,31 +145,34 @@ Pane {
             height: itemCover.height / 10
             color: Material.background
             z: 2
-            opacity: 0.5
+            opacity: 0
 
-            // TODO
             RowLayout {
                 id: starColumnLayout
-
-                //anchors.top: rectStarOpacity.top
-                //anchors.bottom: rectStarOpacity.bottom
-                //anchors.left: cover.left
-                //anchors.right: cover.right
                 anchors.centerIn: parent
-                width: cover.width / 2
+                width: itemCover.height
+
                 Repeater {
-                    model: starCount
+                    model: activeStarCount
                     Image {
-                        id: starImage
+                        id: activeStarImage
                         source: "qrc:/images/star.png"
-                        //anchors.centerIn: parent
                         height: starColumnLayout.height
+                        width: itemCover.height / 5
+                        fillMode: Image.PreserveAspectFit
+                    }
+                }
+                Repeater {
+                    model: inactiveStarCount
+                    Image {
+                        id: inactiveStarImage
+                        source: "qrc:/images/inactiveStar.png"
+                        height: starColumnLayout.height
+                        width: itemCover.height / 5
                         fillMode: Image.PreserveAspectFit
                     }
                 }
             }
-
-
         }
 
         Label {
@@ -183,6 +192,7 @@ Pane {
 
         Slider {
             id: progressSlider
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
             Layout.fillWidth: true
             Layout.fillHeight: false
 
@@ -197,10 +207,14 @@ Pane {
 
     RowLayout {
         id: portraitRowLayout
-        anchors.top: undefined
+        anchors.top: portraitColumnLayout.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        Layout.fillHeight: true
+
+        spacing: 0
+        Layout.margins: 0
 
         Image {
             id: previous
@@ -208,24 +222,24 @@ Pane {
             source: "qrc:/images/previous.png"
 
             Layout.fillWidth: true
-            Layout.fillHeight: false
+            Layout.fillHeight: true
 
-            anchors.top: undefined
+            anchors.top: portraitRowLayout.top
             anchors.left: portraitRowLayout.left
             anchors.right: undefined
             anchors.bottom: portraitRowLayout.bottom
 
-            Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+            verticalAlignment: Image.AlignBottom
 
             MouseArea {
                 id: maPrevious
-                anchors.fill: parent
+                anchors.fill: previous
                 onClicked: {
                     mediaPlayerControl.previous()
                 }
             }
 
-            ColorOverlay {
+            /*ColorOverlay {
                 id: colorOverlayPrevious
                 anchors.fill: previous
                 source: previous
@@ -248,7 +262,7 @@ Pane {
                     duration: 500
                     easing.type: Easing.OutSine
                 }
-            }
+            }*/
         }
 
         Image {
@@ -257,47 +271,47 @@ Pane {
             source: "qrc:/images/play.png"
 
             Layout.fillWidth: true
-            Layout.fillHeight: false
+            Layout.fillHeight: true
 
-            anchors.top: undefined
+            anchors.top: portraitRowLayout.top
             anchors.left: undefined
             anchors.right: undefined
             anchors.bottom: portraitRowLayout.bottom
 
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+            verticalAlignment: Image.AlignBottom
 
             MouseArea {
                 id: maPlayPause
-                anchors.fill: parent
+                anchors.fill: playPause
                 onClicked: {
                     mediaPlayerControl.playPause()
                 }
             }
 
             /*ColorOverlay {
-                id: colorOverlayPlayPause
-                anchors.fill: playPause
-                source: playPause
-                color: "transparent"
-            }
+                    id: colorOverlayPlayPause
+                    anchors.fill: playPause
+                    source: playPause
+                    color: "transparent"
+                }
 
-            states: [
-                State {
-                    when: maPlayPause.pressed
-                    PropertyChanges {
-                        target: colorOverlayPlayPause
-                        color: Material.color(Material.Purple)
+                states: [
+                    State {
+                        when: maPlayPause.pressed
+                        PropertyChanges {
+                            target: colorOverlayPlayPause
+                            color: Material.color(Material.Purple)
+                        }
                     }
-                }
-            ]
+                ]
 
-            transitions: Transition {
-                ColorAnimation {
-                    from: Material.color(Material.Purple)
-                    duration: 500
-                    easing.type: Easing.OutSine
-                }
-            }*/
+                transitions: Transition {
+                    ColorAnimation {
+                        from: Material.color(Material.Purple)
+                        duration: 500
+                        easing.type: Easing.OutSine
+                    }
+                }*/
         }
 
         Image {
@@ -306,53 +320,53 @@ Pane {
             source: "qrc:/images/next.png"
 
             Layout.fillWidth: true
-            Layout.fillHeight: false
+            Layout.fillHeight: true
 
-            anchors.top: undefined
+            anchors.top: portraitRowLayout.top
             anchors.left: undefined
             anchors.right: portraitRowLayout.right
             anchors.bottom: portraitRowLayout.bottom
 
-            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+            verticalAlignment: Image.AlignBottom
 
             MouseArea {
                 id: maNext
-                anchors.fill: parent
+                anchors.fill: next
                 onClicked: mediaPlayerControl.next()
             }
 
-            ColorOverlay {
-                id: colorOverlayNext
-                anchors.fill: next
-                source: next
-                color: "transparent"
-            }
+            /*ColorOverlay {
+                    id: colorOverlayNext
+                    anchors.fill: next
+                    source: next
+                    color: "transparent"
+                }
 
-            states: [
-                State {
-                    when: maNext.pressed
-                    PropertyChanges {
-                        target: colorOverlayNext
-                        color: Material.color(Material.Purple)
+                states: [
+                    State {
+                        when: maNext.pressed
+                        PropertyChanges {
+                            target: colorOverlayNext
+                            color: Material.color(Material.Purple)
+                        }
                     }
-                }
-            ]
+                ]
 
-            transitions: Transition {
-                ColorAnimation {
-                    from: Material.color(Material.Purple)
-                    duration: 500
-                    easing.type: Easing.OutSine
-                }
-            }
+                transitions: Transition {
+                    ColorAnimation {
+                        from: Material.color(Material.Purple)
+                        duration: 500
+                        easing.type: Easing.OutSine
+                    }
+                }*/
         }
-
-
     }
+
 
     // Mode: Landscape
     RowLayout {
         id: landscapeRowLayout
+        visible: false
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: undefined
@@ -361,24 +375,28 @@ Pane {
 
     ColumnLayout {
         id: landscapeColumnLayout
+        visible: false
         anchors.top: parent.top
         anchors.left: landscapeRowLayout.right
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
     }
+
+    // Kind of hack to simulate C++ object->blockSignals(bool)
+    property bool emitVolumeSliderSignal: true
+    property bool emitProgressSliderSignal: true
 
     // Connections
     Connections {
         target: volumeSlider
         onValueChanged: {
-            remoteClient.setVolume(volumeSlider.value)
+            if (emitVolumeSliderSignal) remoteClient.setVolume(volumeSlider.value)
         }
     }
 
     Connections {
         target: progressSlider
         onValueChanged: {
-            remoteClient.setPosition(progressSlider.value)
+            if (emitProgressSliderSignal) remoteClient.setPosition(progressSlider.value)
         }
     }
 
@@ -389,23 +407,27 @@ Pane {
             albumArtistLabel.text = album + " – " + artist
             if (stars > 0) {
                 rectStarOpacity.opacity = 0.5
-                //starsLabel.text = "Soon, " + stars + " stars will be displayed"
+                activeStarCount = stars
+                inactiveStarCount = 5 - stars
             } else {
                 rectStarOpacity.opacity = 0
             }
-            starCount = stars
         }
 
         onAboutToUpdateVolume: {
             volumeLabel.text = String(Number(Math.round(volume * 100).toFixed(2))) + " %"
+            emitVolumeSliderSignal = false
             volumeSlider.value = volume
+            emitVolumeSliderSignal = true
         }
         onPlaying: playPause.source = "qrc:/images/play.png"
         onPaused: playPause.source = "qrc:/images/pause.png"
         onStopped: cover.source = "image://coverprovider/default"
         onProgressChanged: {
             progressLabel.text = formattedTime
+            emitProgressSliderSignal = false
             progressSlider.value = progress
+            emitProgressSliderSignal = true
         }
         onNewCoverReceived: {
             cover.source = "image://coverprovider/" + random

@@ -5,8 +5,6 @@
 #include <QSettings>
 #include <QUdpSocket>
 
-#include <QtDebug>
-
 NetworkScannerModel::NetworkScannerModel(QObject *parent)
 	: QStringListModel(parent)
 {
@@ -14,7 +12,6 @@ NetworkScannerModel::NetworkScannerModel(QObject *parent)
 	QStringList l;
 	l << serverIp;
 	setStringList(l);
-	qDebug() << Q_FUNC_INFO << l;
 }
 
 QHash<int, QByteArray> NetworkScannerModel::roleNames() const {
@@ -28,8 +25,6 @@ QHash<int, QByteArray> NetworkScannerModel::roleNames() const {
 
 void NetworkScannerModel::scanNetwork()
 {
-	qDebug() << Q_FUNC_INFO;
-
 	// Fetch own address IP
 	QString ip;
 	for (const QHostAddress &address : QNetworkInterface::allAddresses()) {
@@ -62,6 +57,4 @@ void NetworkScannerModel::scanNetwork()
 	QStringList l;
 	l << serverIp;
 	setStringList(l);
-
-	qDebug() << Q_FUNC_INFO << l;
 }

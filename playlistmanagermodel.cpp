@@ -1,11 +1,8 @@
 #include "playlistmanagermodel.h"
 
-#include <QtDebug>
-
 PlaylistManagerModel::PlaylistManagerModel(QObject *parent)
 	: QStringListModel(parent)
 {
-	qDebug() << Q_FUNC_INFO;
 	QStringList l;
 	setStringList(l);
 }

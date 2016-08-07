@@ -40,7 +40,7 @@
         <file>translations/miam-player-remote_en.qm</file>
         <file>translations/miam-player-remote_fr.qm</file>
         <file>images/star.png</file>
-        <file>images/star@2x.png</file>
+        <file>images/inactiveStar.png</file>
     </qresource>
     <qresource prefix="/pages">
         <file alias="connect">pages/connect.qml</file>

@@ -20,6 +20,9 @@ public:
 	virtual QImage requestImage(const QString &id, QSize *, const QSize &) override;
 
 	void generateCover(const QByteArray &cover);
+
+	virtual ImageType imageType() const override;
+
 };
 
 #endif // COVERPROVIDER_H

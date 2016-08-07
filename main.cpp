@@ -17,8 +17,6 @@
 #include <QQuickStyle>
 #include <QTranslator>
 
-#include <QtDebug>
-
 int main(int argc, char *argv[])
 {
 	QGuiApplication::setOrganizationName(COMPANY);
@@ -35,9 +33,9 @@ int main(int argc, char *argv[])
 
 	QString language = QLocale::system().uiLanguages().first().left(2);
 	QTranslator playerTranslator;
-	bool b = playerTranslator.load(":/translations/miam-player-remote_" + language + ".qm");
-	bool c = QGuiApplication::installTranslator(&playerTranslator);
-	qDebug() << Q_FUNC_INFO << language << b << c;
+	/*bool b =*/ playerTranslator.load(":/translations/miam-player-remote_" + language + ".qm");
+	/*bool c =*/ QGuiApplication::installTranslator(&playerTranslator);
+	//qDebug() << Q_FUNC_INFO << language << b << c;
 
 	QQuickStyle::setStyle("Material");
 	QQmlApplicationEngine engine;

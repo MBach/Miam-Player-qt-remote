@@ -1,7 +1,5 @@
 #include "mediaplayercontrol.h"
 
-#include <QtDebug>
-
 MediaPlayerControl::MediaPlayerControl(RemoteClient *remoteClient, QObject *parent)
 	: QObject(parent)
 	, _remoteClient(remoteClient)

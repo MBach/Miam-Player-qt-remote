@@ -7,8 +7,6 @@
 #include <QQuickWindow>
 #include <QSettings>
 
-#include <QtDebug>
-
 RemoteClient::RemoteClient(CoverProvider *coverProvider, QObject *parent)
 	: QObject(parent)
 	, _coverProvider(coverProvider)
@@ -82,13 +80,11 @@ void RemoteClient::socketReadyRead()
 
 	switch (command) {
 	case CMD_Playback:
-		qDebug() << Q_FUNC_INFO << "cmd:playback";
 		// Nothing
 		break;
 	case CMD_State: {
 		QString message;
 		in >> message;
-		qDebug() << Q_FUNC_INFO << "cmd:state" << message;
 		if (message == "paused") {
 			emit paused();
 		} else if (message == "playing"){
@@ -99,7 +95,6 @@ void RemoteClient::socketReadyRead()
 		break;
 	}
 	case CMD_Track: {
-		qDebug() << Q_FUNC_INFO << "cmd:track";
 		QString uri, artistAlbum, album, title, trackNumber;
 		int stars;
 		in >> uri;
@@ -108,7 +103,10 @@ void RemoteClient::socketReadyRead()
 		in >> title;
 		in >> trackNumber;
 		in >> stars;
-		qDebug() << Q_FUNC_INFO << "cmd:track" << uri << artistAlbum << album << title << trackNumber << stars;
+		//qDebug() << Q_FUNC_INFO << "cmd:track" << uri << artistAlbum << album << title << trackNumber << stars;
+		if (stars < 0) {
+			stars = 0;
+		}
 		emit aboutToUpdateTrack(title, album, artistAlbum, stars);
 		break;
 	}
@@ -129,30 +127,28 @@ void RemoteClient::socketReadyRead()
 		QByteArray message;
 		in >> message;
 		qreal v = QString::fromStdString(message.toStdString()).toFloat();
-		qDebug() << Q_FUNC_INFO << "cmd:volume" << v;
+		//qDebug() << Q_FUNC_INFO << "cmd:volume" << v;
 		emit aboutToUpdateVolume(v);
 		break;
 	}
 	case CMD_Connection: {
 		QString hostName;
 		in >> hostName;
-		qDebug() << Q_FUNC_INFO << "cmd:connect" << hostName << _socket->peerAddress() << _socket->peerName();
 		/// TODO detect from message in with mode are we (playlists vs unique)
 		emit connectionSucceded(hostName, _socket->peerAddress().toString());
 		break;
 	}
 	case CMD_Cover: {
-		qDebug() << Q_FUNC_INFO << "cmd:cover";
 		int coverSize;
 		in >> coverSize;
-		qDebug() << Q_FUNC_INFO << "coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
+		//qDebug() << Q_FUNC_INFO << "cmd:cover coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
 
 		if (coverSize > _socket->bytesAvailable()) {
-			qDebug() << Q_FUNC_INFO << "we didn't receive enough bytes to display cover! Waiting...";
+			//qDebug() << Q_FUNC_INFO << "we didn't receive enough bytes to display cover! Waiting...";
 			//_socket->readAll();
 			//return;
 			_socket->waitForReadyRead(1000);
-			qDebug() << Q_FUNC_INFO << "coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
+			//qDebug() << Q_FUNC_INFO << "coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
 		}
 		QByteArray message;
 		in >> message;
@@ -173,14 +169,14 @@ void RemoteClient::socketReadyRead()
 		break;
 	}
 	default:
-		qDebug() << Q_FUNC_INFO << "warning, cmd not found from client" << command;
-		qDebug() << Q_FUNC_INFO << _socket->errorString();
+		//qDebug() << Q_FUNC_INFO << "warning, cmd not found from client" << command;
+		//qDebug() << Q_FUNC_INFO << _socket->errorString();
 		break;
 	}
 
 	// Recursive call
 	if (_socket->bytesAvailable()) {
-		qDebug() << Q_FUNC_INFO << "there is more to read!";
+		//qDebug() << Q_FUNC_INFO << "there is more to read!";
 		socketReadyRead();
 	}
 }
@@ -210,7 +206,7 @@ void RemoteClient::sendPlaybackCommand(const QString &command)
 	out << CMD_Playback;
 	out << QByteArray::fromStdString(command.toStdString());
 	qint64 r = _socket->write(data);
-	qDebug() << Q_FUNC_INFO << command << ", bytes written" << r;
+	//qDebug() << Q_FUNC_INFO << command << ", bytes written" << r;
 }
 
 void RemoteClient::setPosition(qreal p)
