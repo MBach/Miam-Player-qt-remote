@@ -10,33 +10,25 @@
 RemoteClient::RemoteClient(CoverProvider *coverProvider, QObject *parent)
 	: QObject(parent)
 	, _coverProvider(coverProvider)
-	, _socket(new QTcpSocket(this))
+	, _socket(new QWebSocket("remote", QWebSocketProtocol::VersionLatest, this))
 	, _isConnecting(false)
 	, _isConnected(false)
 {
-	_socket->open(QIODevice::ReadWrite);
-	connect(_socket, &QTcpSocket::stateChanged, this, &RemoteClient::socketStateChanged);
-	connect(_socket, &QIODevice::readyRead, this, &RemoteClient::socketReadyRead);
+	connect(_socket, &QWebSocket::stateChanged, this, &RemoteClient::socketStateChanged);
+	connect(_socket, &QWebSocket::binaryMessageReceived, this, &RemoteClient::processBinaryMessage);
+	connect(_socket, &QWebSocket::textMessageReceived, this, &RemoteClient::processTextMessage);
 }
 
 void RemoteClient::requestActivePlaylists()
 {
-	QByteArray data;
-	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_5);
-	out << CMD_ActivePlaylists;
-	out << QString();
-	_socket->write(data);
+	QStringList args = { QString::number(CMD_ActivePlaylists), QString() };
+	_socket->sendTextMessage(args.join(QChar::Null));
 }
 
 void RemoteClient::requestAllPlaylists()
 {
-	QByteArray data;
-	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_5);
-	out << CMD_AllPlaylists;
-	out << QString();
-	_socket->write(data);
+	QStringList args = { QString::number(CMD_AllPlaylists), QString() };
+	_socket->sendTextMessage(args.join(QChar::Null));
 }
 
 void RemoteClient::socketStateChanged(QAbstractSocket::SocketState state)
@@ -69,26 +61,34 @@ void RemoteClient::socketStateChanged(QAbstractSocket::SocketState state)
 	}
 }
 
-void RemoteClient::socketReadyRead()
+void RemoteClient::processBinaryMessage(const QByteArray &message)
 {
-	//qDebug() << Q_FUNC_INFO << "bytesAvailable:" << _socket->bytesAvailable() << "sizeof(Command)" << sizeof(Command);
-	QDataStream in;
-	in.setDevice(_socket);
-	in.setVersion(QDataStream::Qt_5_5);
-	int command;
-	in >> command;
+	_coverProvider->generateCover(message);
+	emit newCoverReceived(qrand());
+}
 
+void RemoteClient::processTextMessage(const QString &message)
+{
+	if (message.isEmpty()) {
+		return;
+	}
+
+	QStringList list = message.split(QChar::Null);
+	if (list.size() <= 1) {
+		return;
+	}
+
+	int command = list.first().toInt();
 	switch (command) {
 	case CMD_Playback:
 		// Nothing
 		break;
 	case CMD_State: {
-		QString message;
-		in >> message;
-		if (message == "paused") {
-			emit paused();
-		} else if (message == "playing"){
+		QMediaPlayer::State state = (QMediaPlayer::State) list.at(1).toInt();
+		if (state == QMediaPlayer::PlayingState) {
 			emit playing();
+		} else if (state == QMediaPlayer::PausedState) {
+			emit paused();
 		} else {
 			emit stopped();
 		}
@@ -97,87 +97,90 @@ void RemoteClient::socketReadyRead()
 	case CMD_Track: {
 		QString uri, artistAlbum, album, title, trackNumber;
 		int stars;
-		in >> uri;
-		in >> artistAlbum;
-		in >> album;
-		in >> title;
-		in >> trackNumber;
-		in >> stars;
-		//qDebug() << Q_FUNC_INFO << "cmd:track" << uri << artistAlbum << album << title << trackNumber << stars;
+		if (list.size() != 7) {
+			return;
+		}
+
+		int i = 0;
+		uri = list.at(++i);
+		artistAlbum = list.at(++i);
+		album = list.at(++i);
+		title = list.at(++i);
+		trackNumber = list.at(++i);
+		stars = list.at(++i).toInt();
 		if (stars < 0) {
 			stars = 0;
 		}
 		emit aboutToUpdateTrack(title, album, artistAlbum, stars);
 		break;
 	}
+	case CMD_Volume: {
+		qreal v = list.at(1).toFloat();
+		emit aboutToUpdateVolume(v);
+		break;
+	}
+	case CMD_Connection: {
+		QString hostName = list.at(1);
+		/// TODO detect from message in with mode are we (playlists vs unique)
+		emit connectionSucceded(hostName, _socket->peerAddress().toString());
+		break;
+	}
 	case CMD_Position: {
 		qint64 pos, duration;
-		in >> pos;
-		in >> duration;
+		pos = list.at(1).toLongLong();
+		duration = list.at(2).toLongLong();
 		qreal ratio = (qreal)pos / (qreal)duration;
 
 		uint t = round(duration / 1000);
 		QString formattedTime = QDateTime::fromTime_t(pos / 1000).toString("mm:ss").append(" / ").append(QDateTime::fromTime_t(t).toString("mm:ss"));
 
-
 		emit progressChanged(ratio, formattedTime);
 		break;
 	}
-	case CMD_Volume: {
-		QByteArray message;
-		in >> message;
-		qreal v = QString::fromStdString(message.toStdString()).toFloat();
-		//qDebug() << Q_FUNC_INFO << "cmd:volume" << v;
-		emit aboutToUpdateVolume(v);
-		break;
-	}
-	case CMD_Connection: {
-		QString hostName;
-		in >> hostName;
-		/// TODO detect from message in with mode are we (playlists vs unique)
-		emit connectionSucceded(hostName, _socket->peerAddress().toString());
-		break;
-	}
-	case CMD_Cover: {
-		int coverSize;
-		in >> coverSize;
-		//qDebug() << Q_FUNC_INFO << "cmd:cover coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
-
-		if (coverSize > _socket->bytesAvailable()) {
-			//qDebug() << Q_FUNC_INFO << "we didn't receive enough bytes to display cover! Waiting...";
-			//_socket->readAll();
-			//return;
-			_socket->waitForReadyRead(1000);
-			//qDebug() << Q_FUNC_INFO << "coverSize" << coverSize << "_socket->bytesAvailable()" << _socket->bytesAvailable();
-		}
-		QByteArray message;
-		in >> message;
-		_coverProvider->generateCover(message);
-		emit newCoverReceived(qrand());
-		break;
-	}
 	case CMD_AllPlaylists: {
-		int count;
-		in >> count;
-		QStringList playlists;
-		for (int i = 0; i < count; i++) {
-			QString title;
-			in >> title;
-			playlists << title;
+		list.removeFirst();
+		emit allPlaylistsReceived(list);
+		break;
+	}
+	case CMD_ActivePlaylists: {
+		list.removeFirst();
+		emit activePlaylistsReceived(list);
+		break;
+	}
+	case CMD_LoadActivePlaylist: {
+		/*int trackCount, playlistSize;
+		in >> trackCount;
+		in >> playlistSize;
+
+		if (playlistSize > _socket->bytesAvailable()) {
+			_socket->waitForReadyRead(1000);
 		}
-		emit aboutToSendPlaylists(playlists);
+
+
+		QStringList tracks;
+		QList<QByteArray> t = incomingBuffer.split('\0');
+		for (QByteArray b : t) {
+			qDebug() << "splitting" << QString(b);
+			tracks << QString(b);
+		}
+
+		QStringList tracks;
+		for (int i = 0; i < trackCount; i++) {
+			QString title, trackNumber, album, artistAlbum, year, rating;
+			//int rating;
+			in >> title;
+			in >> trackNumber;
+			in >> album;
+			in >> artistAlbum;
+			in >> year;
+			in >> rating;
+			tracks << title << trackNumber << album << artistAlbum << year << rating;
+		}
+		emit activePlaylistReceived(tracks);*/
 		break;
 	}
 	default:
-		//qDebug() << Q_FUNC_INFO << "warning, cmd not found from client" << command;
-		//qDebug() << Q_FUNC_INFO << _socket->errorString();
 		break;
-	}
-
-	// Recursive call
-	if (_socket->bytesAvailable()) {
-		//qDebug() << Q_FUNC_INFO << "there is more to read!";
-		socketReadyRead();
 	}
 }
 
@@ -193,42 +196,32 @@ void RemoteClient::establishConnectionToServer(const QString &ip)
 		uint port = QSettings().value("port", 5600).toUInt();
 		if (_socket->state() == QTcpSocket::ConnectingState) {
 			// A previous connection is still pending. Trying to close it!
-			_socket->disconnectFromHost();
+			_socket->close();
 		}
-		_socket->connectToHost(hostAddress, port, QTcpSocket::ReadWrite);
+		_socket->open(QUrl("ws://" + hostAddress.toString() + ":" + QString::number(port)));
 	}
+}
+
+void RemoteClient::loadActivePlaylist(int index)
+{
+	QStringList args = { QString::number(CMD_LoadActivePlaylist), QString::number(index) };
+	_socket->sendTextMessage(args.join(QChar::Null));
 }
 
 void RemoteClient::sendPlaybackCommand(const QString &command)
 {
-	QByteArray data;
-	QDataStream out(&data, QIODevice::ReadWrite);
-	out << CMD_Playback;
-	out << QByteArray::fromStdString(command.toStdString());
-	qint64 r = _socket->write(data);
-	//qDebug() << Q_FUNC_INFO << command << ", bytes written" << r;
+	QStringList args = { QString::number(CMD_Playback), command };
+	_socket->sendTextMessage(args.join(QChar::Null));
 }
 
 void RemoteClient::setPosition(qreal p)
 {
-	QByteArray data;
-	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_5);
-	out << CMD_Position;
-	QByteArray ba;
-	ba.append(QString::number(p));
-	out << ba;
-	_socket->write(data);
+	QStringList args = { QString::number(CMD_Position), QString::number(p) };
+	_socket->sendTextMessage(args.join(QChar::Null));
 }
 
 void RemoteClient::setVolume(qreal v)
 {
-	QByteArray data;
-	QDataStream out(&data, QIODevice::ReadWrite);
-	out.setVersion(QDataStream::Qt_5_5);
-	out << CMD_Volume;
-	QByteArray ba;
-	ba.append(QString::number(v));
-	out << ba;
-	_socket->write(data);
+	QStringList args = { QString::number(CMD_Volume), QString::number(v) };
+	_socket->sendTextMessage(args.join(QChar::Null));
 }

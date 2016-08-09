@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.2
-//import QtGraphicalEffects 1.0
+import QtGraphicalEffects 1.0
 
 import QtQuick.Controls.Material 2.0
 
@@ -242,13 +242,15 @@ Pane {
             /*ColorOverlay {
                 id: colorOverlayPrevious
                 anchors.fill: previous
-                source: previous
+                source: Material.color(Material.Purple)
                 color: "transparent"
+                visible: false
             }
 
             states: [
                 State {
                     when: maPrevious.pressed
+
                     PropertyChanges {
                         target: colorOverlayPrevious
                         color: Material.color(Material.Purple)
@@ -336,29 +338,31 @@ Pane {
             }
 
             /*ColorOverlay {
-                    id: colorOverlayNext
-                    anchors.fill: next
-                    source: next
-                    color: "transparent"
+                id: colorOverlayNext
+                color: "#00000000"
+                anchors.fill: next
+                source: next
+                cached: true
+            }
+
+            states: [
+                State {
+                    when: maNext.pressed
+                    PropertyChanges {
+                        target: colorOverlayNext
+                        color: Material.color(Material.Purple)
+                    }
                 }
+            ]
 
-                states: [
-                    State {
-                        when: maNext.pressed
-                        PropertyChanges {
-                            target: colorOverlayNext
-                            color: Material.color(Material.Purple)
-                        }
-                    }
-                ]
-
-                transitions: Transition {
-                    ColorAnimation {
-                        from: Material.color(Material.Purple)
-                        duration: 500
-                        easing.type: Easing.OutSine
-                    }
-                }*/
+            transitions: Transition {
+                ColorAnimation {
+                    //from: Material.color(Material.Purple)
+                    from: "transparent"
+                    duration: 500
+                    easing.type: Easing.OutSine
+                }
+            }*/
         }
     }
 
@@ -422,7 +426,11 @@ Pane {
         }
         onPlaying: playPause.source = "qrc:/images/play.png"
         onPaused: playPause.source = "qrc:/images/pause.png"
-        onStopped: cover.source = "image://coverprovider/default"
+        onStopped: {
+            rectStarOpacity.opacity = 0
+            progressLabel.text = qsTr("(not playing)")
+            cover.source = "image://coverprovider/default"
+        }
         onProgressChanged: {
             progressLabel.text = formattedTime
             emitProgressSliderSignal = false

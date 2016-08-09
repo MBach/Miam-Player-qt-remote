@@ -1,10 +1,8 @@
 #include "playlistmanagermodel.h"
 
 PlaylistManagerModel::PlaylistManagerModel(QObject *parent)
-	: QStringListModel(parent)
+	: QStandardItemModel(parent)
 {
-	QStringList l;
-	setStringList(l);
 }
 
 void PlaylistManagerModel::requestAllPlaylists(RemoteClient *remoteClient)
@@ -21,7 +19,19 @@ void PlaylistManagerModel::requestActivePlaylists(RemoteClient *remoteClient)
 	}
 }
 
+QHash<int, QByteArray> PlaylistManagerModel::roleNames() const
+{
+	QHash<int, QByteArray> roles;
+	roles[Qt::DisplayRole] = "name";
+	return roles;
+}
+
 void PlaylistManagerModel::updateModel(const QStringList &playlists)
 {
-	setStringList(playlists);
+	this->removeRows(0, this->rowCount());
+
+	for (QString playlist : playlists) {
+		QStandardItem *item = new QStandardItem(playlist);
+		this->appendRow(item);
+	}
 }

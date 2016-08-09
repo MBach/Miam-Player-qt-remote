@@ -2,17 +2,18 @@ TEMPLATE = app
 
 TARGET = MiamPlayer-Remote
 
-QT += quick quickcontrols2 multimedia network
+QT += quick quickcontrols2 multimedia websockets
 android: QT += androidextras
 
 CONFIG += console qtquickcompiler
 
 SOURCES += main.cpp \
+    models/lastconnectionsmodel.cpp \
+    models/networkscannermodel.cpp \
+    models/playlistmanagermodel.cpp \
+    models/playlistmodel.cpp \
     coverprovider.cpp \
-    lastconnectionsmodel.cpp \
     mediaplayercontrol.cpp \
-    networkscannermodel.cpp \
-    playlistmanagermodel.cpp \
     remoteclient.cpp \
     wifichecker.cpp
 
@@ -39,14 +40,14 @@ DISTFILES += miamplayer-remote.qml \
     android/WifiActivator.java
 
 HEADERS += coverprovider.h \
-    lastconnectionsmodel.h \
-    networkscannermodel.h \
+    models/lastconnectionsmodel.h \
+    models/networkscannermodel.h \
+    models/playlistmanagermodel.h \
+    models/playlistmodel.h \
     mediaplayercontrol.h \
-    playlistmanagermodel.h \
     remoteclient.h \
     wifichecker.h
 
-TRANSLATIONS = translations/miam-player-remote_en.ts \
-    translations/miam-player-remote_fr.ts
+TRANSLATIONS = translations/*.ts
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

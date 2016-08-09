@@ -1,7 +1,7 @@
 #ifndef PLAYLISTMANAGERMODEL_H
 #define PLAYLISTMANAGERMODEL_H
 
-#include <QStringListModel>
+#include <QStandardItemModel>
 #include "remoteclient.h"
 
 /**
@@ -9,7 +9,7 @@
  * \author		Matthieu Bachelier
  * \copyright   GNU General Public License v3
  */
-class PlaylistManagerModel : public QStringListModel
+class PlaylistManagerModel : public QStandardItemModel
 {
 	Q_OBJECT
 public:
@@ -18,6 +18,8 @@ public:
 	Q_INVOKABLE void requestAllPlaylists(RemoteClient *remoteClient);
 
 	Q_INVOKABLE void requestActivePlaylists(RemoteClient *remoteClient);
+
+	virtual QHash<int, QByteArray> roleNames() const override;
 
 public slots:
 	void updateModel(const QStringList &playlists);

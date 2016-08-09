@@ -6,11 +6,12 @@
 #define SOFT "MiamPlayerRemote"
 #define VERSION "0.1"
 
+#include "models/lastconnectionsmodel.h"
+#include "models/networkscannermodel.h"
+#include "models/playlistmanagermodel.h"
+#include "models/playlistmodel.h"
 #include "coverprovider.h"
-#include "lastconnectionsmodel.h"
 #include "mediaplayercontrol.h"
-#include "networkscannermodel.h"
-#include "playlistmanagermodel.h"
 #include "remoteclient.h"
 #include "wifichecker.h"
 
@@ -26,6 +27,7 @@ int main(int argc, char *argv[])
 
 	// Register some classes first
 	qmlRegisterType<PlaylistManagerModel>("org.miamplayer.remote", 1, 0, "PlaylistManagerModel");
+	qmlRegisterType<PlaylistModel>("org.miamplayer.remote", 1, 0, "PlaylistModel");
 	qmlRegisterType<NetworkScannerModel>("org.miamplayer.remote", 1, 0, "NetworkScannerModel");
 
 	// Translate the UI
